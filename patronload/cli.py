@@ -4,7 +4,7 @@ from time import perf_counter
 
 import click
 
-from my_app.config import configure_logger, configure_sentry
+from patronload.config import configure_logger, configure_sentry
 
 logger = logging.getLogger(__name__)
 
