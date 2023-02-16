@@ -4,7 +4,7 @@ from time import perf_counter
 
 import click
 
-from my_app.config import configure_logger, configure_sentry
+from patronload.config import configure_logger, configure_sentry
 
 logger = logging.getLogger(__name__)
 
@@ -18,7 +18,7 @@ def main(verbose: bool) -> None:
     root_logger = logging.getLogger()
     logger.info(configure_logger(root_logger, verbose))
     logger.info(configure_sentry())
-    logger.info("Running process")
+    logger.info("Running patronload process")
 
     # Do things here!
 
