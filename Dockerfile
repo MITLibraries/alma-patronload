@@ -1,4 +1,4 @@
-FROM python:3.10-slim as build
+FROM python:3.11-slim as build
 WORKDIR /app
 COPY . .
 
@@ -9,4 +9,4 @@ RUN apt-get update && apt-get upgrade -y && apt-get install -y git
 COPY Pipfile* /
 RUN pipenv install
 
-ENTRYPOINT ["pipenv", "run", "my_app"]
+ENTRYPOINT ["pipenv", "run", "patronload"]
