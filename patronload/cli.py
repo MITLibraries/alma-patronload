@@ -4,7 +4,7 @@ from time import perf_counter
 
 import click
 
-from patronload.config import configure_logger, configure_sentry
+from patronload.config import configure_logger, configure_sentry, load_config_values
 
 logger = logging.getLogger(__name__)
 
@@ -17,7 +17,15 @@ def main(verbose: bool) -> None:
     start_time = perf_counter()
     root_logger = logging.getLogger()
     logger.info(configure_logger(root_logger, verbose))
-    logger.info(configure_sentry())
+    config_values = load_config_values()
+    logger.info(
+        configure_sentry(config_values["WORKSPACE"], config_values["SENTRY_DSN"])
+    )
+
+    logger.info(
+        "Patronload config settings loaded for environment: %s",
+        config_values["WORKSPACE"],
+    )
     logger.info("Running patronload process")
 
     # Do things here!
