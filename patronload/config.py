@@ -4,41 +4,33 @@ from typing import Optional
 
 import sentry_sdk
 
-EXPECTED_CONFIG_VARIABLES = [
-    "DATA_WAREHOUSE_USER",
-    "DATA_WAREHOUSE_PASSWORD",
-    "DATA_WAREHOUSE_HOST",
-    "DATA_WAREHOUSE_PORT",
-    "DATA_WAREHOUSE_SID",
-    "LOG_LEVEL",
-    "S3_BUCKET_NAME",
-    "S3_PATH",
-    "SENTRY_DSN",
-    "WORKSPACE",
-]
 
-
-def configure_logger(logger: logging.Logger, verbose: bool) -> str:
-    if verbose:
+def configure_logger(logger: logging.Logger, log_level_string: str) -> str:
+    if log_level_string.upper() not in logging.getLevelNamesMapping():
+        raise ValueError(f"'{log_level_string}' is not a valid Python logging level")
+    log_level = logging.getLevelName(log_level_string.upper())
+    if log_level < 20:
         logging.basicConfig(
             format="%(asctime)s %(levelname)s %(name)s.%(funcName)s() line %(lineno)d: "
             "%(message)s"
         )
-        logger.setLevel(logging.DEBUG)
+        logger.setLevel(log_level)
         for handler in logging.root.handlers:
             handler.addFilter(logging.Filter("patronload"))
     else:
         logging.basicConfig(
             format="%(asctime)s %(levelname)s %(name)s.%(funcName)s(): %(message)s"
         )
-        logger.setLevel(logging.INFO)
+        logger.setLevel(log_level)
     return (
         f"Logger '{logger.name}' configured with level="
         f"{logging.getLevelName(logger.getEffectiveLevel())}"
     )
 
 
-def configure_sentry(env: str, sentry_dsn: str) -> str:
+def configure_sentry() -> str:
+    env = os.getenv("WORKSPACE")
+    sentry_dsn = os.getenv("SENTRY_DSN")
     if sentry_dsn and sentry_dsn.lower() != "none":
         sentry_sdk.init(sentry_dsn, environment=env)
         return f"Sentry DSN found, exceptions will be sent to Sentry with env={env}"
@@ -46,17 +38,21 @@ def configure_sentry(env: str, sentry_dsn: str) -> str:
 
 
 def load_config_values() -> dict:
-    """
-    Retrieve all required env variables and return as a dict.
-
-    If an env variable is not present, a KeyError will be raised by the
-    get_required_env_variable function with a reminder that it is required
-    by the application.
-    """
-    config_values = {}
-    for expected_config_variable in EXPECTED_CONFIG_VARIABLES:
-        if config_value := get_required_env_variable(expected_config_variable):
-            config_values[expected_config_variable] = config_value
+    """Retrieve all required env variables to update the config_values dict."""
+    config_values = {
+        "DATA_WAREHOUSE_USER": "user123",
+        "DATA_WAREHOUSE_PASSWORD": "pass123",
+        "DATA_WAREHOUSE_HOST": "http://localhost",
+        "DATA_WAREHOUSE_PORT": "1234",
+        "DATA_WAREHOUSE_SID": "database5678",
+        "LOG_LEVEL": "INFO",
+        "S3_BUCKET_NAME": "patronload",
+        "S3_PATH": "/test/example/",
+        "WORKSPACE": "test",
+    }
+    for config_variable in config_values.keys():
+        if config_value := get_required_env_variable(config_variable):
+            config_values[config_variable] = config_value
     return config_values
 
 

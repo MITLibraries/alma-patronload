@@ -10,17 +10,13 @@ logger = logging.getLogger(__name__)
 
 
 @click.command()
-@click.option(
-    "-v", "--verbose", is_flag=True, help="Pass to log at debug level instead of info"
-)
-def main(verbose: bool) -> None:
+def main() -> None:
     start_time = perf_counter()
-    root_logger = logging.getLogger()
-    logger.info(configure_logger(root_logger, verbose))
     config_values = load_config_values()
-    logger.info(
-        configure_sentry(config_values["WORKSPACE"], config_values["SENTRY_DSN"])
-    )
+    root_logger = logging.getLogger()
+    log_level = config_values["LOG_LEVEL"] or "INFO"
+    logger.info(configure_logger(root_logger, log_level))
+    logger.info(configure_sentry())
 
     logger.info(
         "Patronload config settings loaded for environment: %s",
