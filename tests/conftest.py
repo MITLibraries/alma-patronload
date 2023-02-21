@@ -9,7 +9,7 @@ def test_env():
     os.environ = {
         "DATA_WAREHOUSE_USER": "user123",
         "DATA_WAREHOUSE_PASSWORD": "pass123",
-        "DATA_WAREHOUSE_HOST": "http://localhost",
+        "DATA_WAREHOUSE_HOST": "http://localhost/",
         "DATA_WAREHOUSE_PORT": "1234",
         "DATA_WAREHOUSE_SID": "database5678",
         "LOG_LEVEL": "INFO",
