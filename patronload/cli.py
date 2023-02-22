@@ -1,23 +1,27 @@
 import logging
+import os
 from datetime import timedelta
 from time import perf_counter
 
 import click
 
-from patronload.config import configure_logger, configure_sentry
+from patronload.config import configure_logger, configure_sentry, load_config_values
 
 logger = logging.getLogger(__name__)
 
 
 @click.command()
-@click.option(
-    "-v", "--verbose", is_flag=True, help="Pass to log at debug level instead of info"
-)
-def main(verbose: bool) -> None:
+def main() -> None:
     start_time = perf_counter()
+    config_values = load_config_values()
     root_logger = logging.getLogger()
-    logger.info(configure_logger(root_logger, verbose))
+    logger.info(configure_logger(root_logger, os.getenv("LOG_LEVEL", "None")))
     logger.info(configure_sentry())
+
+    logger.info(
+        "Patronload config settings loaded for environment: %s",
+        config_values["WORKSPACE"],
+    )
     logger.info("Running patronload process")
 
     # Do things here!
