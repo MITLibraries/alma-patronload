@@ -1,4 +1,5 @@
 import logging
+import os
 from datetime import timedelta
 from time import perf_counter
 
@@ -14,7 +15,7 @@ def main() -> None:
     start_time = perf_counter()
     config_values = load_config_values()
     root_logger = logging.getLogger()
-    logger.info(configure_logger(root_logger, config_values["LOG_LEVEL"]))
+    logger.info(configure_logger(root_logger, os.getenv("LOG_LEVEL", "None")))
     logger.info(configure_sentry())
 
     logger.info(

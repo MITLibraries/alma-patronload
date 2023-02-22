@@ -2,12 +2,7 @@ import logging
 
 import pytest
 
-from patronload.config import (
-    configure_logger,
-    configure_sentry,
-    get_required_env_variable,
-    load_config_values,
-)
+from patronload.config import configure_logger, configure_sentry, load_config_values
 
 
 def test_configure_logger_with_invalid_level_raises_error():
@@ -49,18 +44,6 @@ def test_configure_sentry_env_variable_is_dsn(monkeypatch):
     assert result == "Sentry DSN found, exceptions will be sent to Sentry with env=test"
 
 
-def test_config_get_required_env_variable_success():
-    assert get_required_env_variable("WORKSPACE") == "test"
-
-
-def test_config_get_required_env_variable_missing_variable_raises_error(
-    monkeypatch,
-):
-    with pytest.raises(KeyError):
-        monkeypatch.delenv("WORKSPACE", raising=False)
-        get_required_env_variable("WORKSPACE")
-
-
 def test_load_config_values_success():
     config_values = load_config_values()
     assert config_values == {
@@ -69,7 +52,6 @@ def test_load_config_values_success():
         "DATA_WAREHOUSE_HOST": "http://localhost/",
         "DATA_WAREHOUSE_PORT": "1234",
         "DATA_WAREHOUSE_SID": "database5678",
-        "LOG_LEVEL": "INFO",
         "S3_BUCKET_NAME": "patronload",
         "S3_PATH": "/test/example/",
         "WORKSPACE": "test",

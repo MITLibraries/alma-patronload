@@ -1,6 +1,5 @@
 import logging
 import os
-from typing import Optional
 
 import sentry_sdk
 
@@ -45,21 +44,10 @@ def load_config_values() -> dict:
         "DATA_WAREHOUSE_HOST": "http://localhost",
         "DATA_WAREHOUSE_PORT": "1234",
         "DATA_WAREHOUSE_SID": "database5678",
-        "LOG_LEVEL": "INFO",
         "S3_BUCKET_NAME": "patronload",
         "S3_PATH": "/test/example/",
         "WORKSPACE": "test",
     }
     for config_variable in config_values.keys():
-        if config_value := get_required_env_variable(config_variable):
-            config_values[config_variable] = config_value
+        config_values[config_variable] = os.environ[config_variable]
     return config_values
-
-
-def get_required_env_variable(variable_name: str) -> Optional[str]:
-    try:
-        return os.environ[variable_name]
-    except KeyError as error:
-        raise KeyError(
-            f"Missing variable: '{variable_name}' is required for all environments"
-        ) from error
