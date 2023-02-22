@@ -14,8 +14,7 @@ def main() -> None:
     start_time = perf_counter()
     config_values = load_config_values()
     root_logger = logging.getLogger()
-    log_level = config_values["LOG_LEVEL"] or "INFO"
-    logger.info(configure_logger(root_logger, log_level))
+    logger.info(configure_logger(root_logger, config_values["LOG_LEVEL"]))
     logger.info(configure_sentry())
 
     logger.info(

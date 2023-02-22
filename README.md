@@ -17,10 +17,10 @@ Creates Alma-compliant XML patron profiles from information extracted from the D
 - `DATA_WAREHOUSE_HOST` = The host for the Data Warehouse database.
 - `DATA_WAREHOUSE_PORT` = The port for the Data Warehouse database.
 - `DATA_WAREHOUSE_SID` = The system identifier for the Data Warehouse database instance.
-- `LOG_LEVEL` = The log level for the `alma-patronload` application
 - `S3_BUCKET_NAME` = The S3 bucket in which files are deposited.
 - `S3_PATH` = The file path prefix for files deposited to the S3 bucket.
 - `WORKSPACE` = Set to `dev` for local development, this will be set to `stage` and `prod` in those environments by Terraform.
 
 ## Optional ENV
+- `LOG_LEVEL` = The log level for the `alma-patronload` application. Defaults to `INFO` if not set.
 - `SENTRY_DSN` = If set to a valid Sentry DSN, enables Sentry exception monitoring. This is not needed for local development.
