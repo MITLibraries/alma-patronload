@@ -1,0 +1,24 @@
+### This is the Terraform-generated dev-build.yml workflow for the alma-patronload-stage app repository ###
+### If this is a Lambda repo, uncomment the FUNCTION line at the end of the document     ###
+### If the container requires any additional pre-build commands, uncomment and edit      ###
+### the PREBUILD line at the end of the document.                                        ###
+name: Stage Container Build and Deploy
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - main
+    paths-ignore:
+      - '.github/**'
+
+jobs:
+  deploy:
+    name: Stage Container Deploy
+    uses: mitlibraries/.github/.github/workflows/ecr-shared-deploy-stage.yml@main
+    secrets: inherit
+    with:
+      AWS_REGION: "us-east-1"
+      GHA_ROLE: "alma-patronload-gha-stage"
+      ECR: "alma-patronload-stage"
+      # FUNCTION: ""
+      # PREBUILD: 
