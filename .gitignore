@@ -155,3 +155,4 @@ cython_debug/
 .DS_Store
 output/
 .vscode/
+vendor/
