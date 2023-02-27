@@ -7,6 +7,8 @@ ECR_URL_DEV:=222053980223.dkr.ecr.us-east-1.amazonaws.com/alma-patronload-dev
 ### End of Terraform-generated header                            ###
 SHELL=/bin/bash
 DATETIME:=$(shell date -u +%Y%m%dT%H%M%SZ)
+S3_BUCKET:=shared-files-$(shell aws sts get-caller-identity --query "Account" --output text)
+ORACLE_ZIP:=instantclient-basiclite-linux.x64-21.9.0.0.0dbru.zip
 
 ### Dependency commands ###
 
@@ -16,6 +18,11 @@ install: ## Install dependencies and CLI app
 update: install ## Update all Python dependencies
 	pipenv clean
 	pipenv update --dev
+
+vendor/$(ORACLE_ZIP):
+	aws s3 cp s3://$(S3_BUCKET)/files/$(ORACLE_ZIP) vendor/$(ORACLE_ZIP)
+
+dependencies: vendor/$(ORACLE_ZIP)
 
 ### Test commands ###
 
