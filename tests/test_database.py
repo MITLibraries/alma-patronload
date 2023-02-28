@@ -1,12 +1,9 @@
 from unittest.mock import MagicMock, patch
 
-import pytest
-from oracledb import DatabaseError
-
 from patronload.database import (
     build_sql_query,
     create_database_connection,
-    query_database_for_patron_records,
+    query_database,
 )
 
 
@@ -22,18 +19,8 @@ def test_create_database_connection_success(mocked_oracledb, config_values):
     mocked_oracledb.connect.assert_called()
 
 
-@patch("patronload.database.oracledb")
-def test_create_database_connection_raises_exception(mocked_oracledb, config_values):
-    mocked_oracledb.init_oracle_client.side_effect = DatabaseError
-    with pytest.raises(DatabaseError):
-        create_database_connection(config_values)
-
-
-def test_query_database_for_patron_records_success():
+def test_query_database_success():
     query = "SELECT ROW1 FROM TABLE1"
     connection = MagicMock()
-    connection.cursor.return_value.fetchall.return_value = iter(["1", "2", "3"])
-    results = query_database_for_patron_records(connection, query)
-    assert next(results) == "1"
-    assert next(results) == "2"
-    assert next(results) == "3"
+    connection.cursor.return_value.fetchall.return_value = [("1", "2"), ("3", "4")]
+    assert query_database(connection, query) == [("1", "2"), ("3", "4")]

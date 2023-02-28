@@ -10,6 +10,28 @@ Creates Alma-compliant XML patron profiles from information extracted from the D
 - To lint the repo: `make lint`
 - To run the app: `pipenv run patronload --help`
 
+The Data Warehouse runs on a older version of Oracle that necessitates the `thick` mode of `python-oracledb` which requires the Oracle Instant Client Library (this app was developed with version 21.9.0.0.0.)
+
+# With Docker
+Note: as of this writing, the Apple M1 Macs cannot run Oracle Instant Client, so Docker is the only option for development on those machines. 
+
+From the project folder:
+
+1. Run `make dependencies` with appropriate AWS credentials
+
+2. Run `make dist-dev` to build the container
+
+3. Run `docker run alma-patronload-dev:latest`
+
+# Without Docker
+1. Run `make dependencies` with appropriate AWS credentials 
+
+   *OR* 
+
+   Download [Oracle Instant Client](https://www.oracle.com/database/technologies/instant-client/downloads.html) (`basiclite` is sufficient) and set the `ORACLE_LIB_DIR` env variable.
+   
+2. Run `pipenv run patronload`
+
 ## Required ENV
 
 - `DATA_WAREHOUSE_USER` = The user for the Data Warehouse database.
@@ -23,4 +45,5 @@ Creates Alma-compliant XML patron profiles from information extracted from the D
 
 ## Optional ENV
 - `LOG_LEVEL` = The log level for the `alma-patronload` application. Defaults to `INFO` if not set.
+- `ORACLE_LIB_DIR` = The directory containing the Oracle Instant Client library. 
 - `SENTRY_DSN` = If set to a valid Sentry DSN, enables Sentry exception monitoring. This is not needed for local development.

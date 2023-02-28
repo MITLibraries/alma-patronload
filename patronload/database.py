@@ -1,4 +1,4 @@
-from typing import Generator
+import os
 
 import oracledb
 
@@ -24,7 +24,7 @@ def create_database_connection(config_values: dict) -> oracledb.Connection:
         config_values: A dict with the necessary values to configure an
         Oracle database connection.
     """
-    oracledb.init_oracle_client()
+    oracledb.init_oracle_client(lib_dir=os.getenv("ORACLE_LIB_DIR"))
     connection_parameters = oracledb.ConnectParams(
         user=config_values["DATA_WAREHOUSE_USER"],
         password=config_values["DATA_WAREHOUSE_PASSWORD"],
@@ -35,11 +35,9 @@ def create_database_connection(config_values: dict) -> oracledb.Connection:
     return oracledb.connect(params=connection_parameters)
 
 
-def query_database_for_patron_records(
-    connection: oracledb.Connection, query: str
-) -> Generator:
+def query_database(connection: oracledb.Connection, query: str) -> list:
     """
-    Query Oracle Database for patron record information.
+    Submit a SQL query to an Oracle Database and retrieve the results.
 
     Args:
         connection: An Oracle database connection.
@@ -48,5 +46,4 @@ def query_database_for_patron_records(
     """
     cursor = connection.cursor()
     cursor.execute(query)
-    for patron_record in cursor.fetchall():
-        yield patron_record
+    return cursor.fetchall()

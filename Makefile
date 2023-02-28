@@ -19,10 +19,8 @@ update: install ## Update all Python dependencies
 	pipenv clean
 	pipenv update --dev
 
-vendor/$(ORACLE_ZIP):
+dependencies: 
 	aws s3 cp s3://$(S3_BUCKET)/files/$(ORACLE_ZIP) vendor/$(ORACLE_ZIP)
-
-dependencies: vendor/$(ORACLE_ZIP)
 
 ### Test commands ###
 

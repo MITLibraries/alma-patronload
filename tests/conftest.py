@@ -4,7 +4,7 @@ import pytest
 from click.testing import CliRunner
 
 
-@pytest.fixture(name="config_values", scope="function")
+@pytest.fixture(name="config_values")
 def config_values_fixture():
     config_values = {
         "DATA_WAREHOUSE_USER": "user123",
