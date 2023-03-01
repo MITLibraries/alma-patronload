@@ -26,6 +26,6 @@ def test_env(config_values):
     yield
 
 
-@pytest.fixture(scope="function")
+@pytest.fixture()
 def runner():
     return CliRunner()

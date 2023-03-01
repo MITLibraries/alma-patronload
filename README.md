@@ -24,11 +24,7 @@ From the project folder:
 3. Run `docker run alma-patronload-dev:latest`
 
 # Without Docker
-1. Run `make dependencies` with appropriate AWS credentials 
-
-   *OR* 
-
-   Download [Oracle Instant Client](https://www.oracle.com/database/technologies/instant-client/downloads.html) (`basiclite` is sufficient) and set the `ORACLE_LIB_DIR` env variable.
+1. Download [Oracle Instant Client](https://www.oracle.com/database/technologies/instant-client/downloads.html) (`basiclite` is sufficient) and set the `ORACLE_LIB_DIR` env variable.
    
 2. Run `pipenv run patronload`
 
