@@ -4,9 +4,9 @@ import pytest
 from click.testing import CliRunner
 
 
-@pytest.fixture(autouse=True)
-def test_env():
-    os.environ = {
+@pytest.fixture(name="config_values")
+def config_values_fixture():
+    config_values = {
         "DATA_WAREHOUSE_USER": "user123",
         "DATA_WAREHOUSE_PASSWORD": "pass123",
         "DATA_WAREHOUSE_HOST": "http://localhost/",
@@ -17,6 +17,12 @@ def test_env():
         "S3_PATH": "/test/example/",
         "WORKSPACE": "test",
     }
+    return config_values
+
+
+@pytest.fixture(autouse=True)
+def test_env(config_values):
+    os.environ = config_values
     yield
 
 

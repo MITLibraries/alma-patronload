@@ -20,4 +20,4 @@ jobs:
       GHA_ROLE: "alma-patronload-gha-dev"
       ECR: "alma-patronload-dev"
       # FUNCTION: ""
-      # PREBUILD: 
+      PREBUILD: "make dependencies"

@@ -21,4 +21,4 @@ jobs:
       GHA_ROLE: "alma-patronload-gha-stage"
       ECR: "alma-patronload-stage"
       # FUNCTION: ""
-      # PREBUILD: 
+      PREBUILD: "make dependencies" 

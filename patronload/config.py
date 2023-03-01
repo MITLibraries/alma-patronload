@@ -48,6 +48,6 @@ def load_config_values() -> dict:
         "S3_PATH": "/test/example/",
         "WORKSPACE": "test",
     }
-    for config_variable in config_values.keys():
+    for config_variable in config_values:
         config_values[config_variable] = os.environ[config_variable]
     return config_values
