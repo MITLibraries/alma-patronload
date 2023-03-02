@@ -20,6 +20,8 @@ mypy = "*"
 pylama = {extras = ["all"], version = "*"}
 pytest = "*"
 freezegun = "*"
+types-python-dateutil = "*"
+types-beautifulsoup4 = "*"
 
 [requires]
 python_version = "3.11"
