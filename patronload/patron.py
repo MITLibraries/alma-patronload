@@ -1,12 +1,13 @@
 import logging
 import re
+from copy import deepcopy
 from datetime import date
-from typing import Generator
+from typing import Any, Generator
 
 from bs4 import BeautifulSoup
 from dateutil.relativedelta import relativedelta
 
-from patronload.config import COMMON_FIELDS
+from patronload.config import STAFF_FIELDS, STUDENT_FIELDS
 
 logger = logging.getLogger(__name__)
 
@@ -22,41 +23,46 @@ def format_phone_number(phone_number: str) -> str:
 
 
 def populate_patron_common_fields(
-    patron: BeautifulSoup, patron_record: tuple, six_months: str, two_years: str
+    patron_template: BeautifulSoup,
+    patron_dict: dict[str, Any],
+    six_months: str,
+    two_years: str,
 ) -> BeautifulSoup:
     """
     Populate the fields common to both staff and student patron records.
 
+    The order of the patron record fields must be in same order as they in the
+    STAFF_FIELDS and STUDENT_FIELDS value lists.
+
     Args:
         patron: An XML template for a patron record
-        patron_record: A patron record as a tuple.
+        patron_dict: A dict of patron record values.
     """
-    patron_dict = dict(zip(COMMON_FIELDS, patron_record))
+    patron = deepcopy(patron_template)
     primary_id = ""
     if patron_dict["KRB_NAME_UPPERCASE"]:
         primary_id = f"{patron_dict['KRB_NAME_UPPERCASE']}@MIT.EDU"
     elif patron_dict["EMAIL_ADDRESS"]:
         primary_id = patron_dict["EMAIL_ADDRESS"]
-    patron.primary_id.string = primary_id  # type: ignore
-    patron.expiry_date.string = six_months  # type: ignore
-    patron.purge_date.string = two_years  # type: ignore
+    patron.primary_id.string = primary_id  # type: ignore[union-attr]
+    patron.expiry_date.string = six_months  # type: ignore[union-attr]
+    patron.purge_date.string = two_years  # type: ignore[union-attr]
 
     if patron_dict["EMAIL_ADDRESS"]:
-        patron.email_address.string = patron_dict["EMAIL_ADDRESS"]  # type: ignore
+        patron.email_address.string = patron_dict[  # type: ignore[union-attr]
+            "EMAIL_ADDRESS"
+        ]
     else:
-        patron.emails.clear()  # type: ignore
+        patron.emails.clear()  # type: ignore[union-attr]
 
-    user_identifiers = patron.find_all("user_identifier")
-    for user_identifier in user_identifiers:
+    for user_identifier in patron.find_all("user_identifier"):
         if user_identifier.find("id_type", desc="Additional"):
-            mit_id = user_identifier.value
+            user_identifier.value.string = patron_dict["MIT_ID"] or ""
         elif user_identifier.find("id_type", desc="Barcode"):
-            library_id = user_identifier.value
-    mit_id.string = patron_dict["MIT_ID"] or ""
-    if patron_dict["LIBRARY_ID"] and patron_dict["LIBRARY_ID"] != "NONE":
-        library_id.string = patron_dict["LIBRARY_ID"] or ""
-    else:
-        library_id.parent.decompose()
+            if patron_dict["LIBRARY_ID"] and patron_dict["LIBRARY_ID"] != "NONE":
+                user_identifier.value.string = patron_dict["LIBRARY_ID"] or ""
+            else:
+                user_identifier.decompose()
     return patron
 
 
@@ -73,8 +79,7 @@ def patron_xml_from_records(
     with open(
         f"config/{patron_type}_template.xml", "r", encoding="utf8"
     ) as xml_template:
-        patron = BeautifulSoup(xml_template, features="xml")
-
+        patron_template = BeautifulSoup(xml_template, features="xml")
         six_months = (date.today() + relativedelta(months=+6)).strftime(
             "%Y-%m-%d"
         ) + "Z"
@@ -83,14 +88,20 @@ def patron_xml_from_records(
         ) + "Z"
 
         for patron_record in patron_records:
-            patron = populate_patron_common_fields(
-                patron,
-                patron_record,
-                six_months,
-                two_years,
-            )
             if patron_type == "staff":
-                pass
+                staff_patron_dict = dict(zip(STAFF_FIELDS, patron_record))
+                patron = populate_patron_common_fields(
+                    patron_template,
+                    staff_patron_dict,
+                    six_months,
+                    two_years,
+                )
             elif patron_type == "student":
-                pass
+                student_patron_dict = dict(zip(STUDENT_FIELDS, patron_record))
+                patron = populate_patron_common_fields(
+                    patron_template,
+                    student_patron_dict,
+                    six_months,
+                    two_years,
+                )
             yield patron

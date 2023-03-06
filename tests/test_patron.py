@@ -1,3 +1,5 @@
+import datetime
+
 from bs4 import BeautifulSoup
 from freezegun import freeze_time
 
@@ -20,41 +22,127 @@ def test_format_phone_number_invalid_value_is_returned():
 
 
 @freeze_time("2023-03-01")
-def test_patron_xml_from_records_staff_success(staff_patron_all_values_record):
+def test_patron_xml_from_records_staff_success():
     with open(
-        "tests/fixtures/staff_patron_xml_record.xml", "r", encoding="utf8"
-    ) as xml_file:
-        patron_xml_record = next(
-            patron_xml_from_records("staff", [staff_patron_all_values_record])
+        "tests/fixtures/staff_patron_xml_record_1.xml", "r", encoding="utf8"
+    ) as xml_file_1, open(
+        "tests/fixtures/staff_patron_xml_record_2.xml", "r", encoding="utf8"
+    ) as xml_file_2:
+        staff_patron_all_values_record_1 = (
+            "222222222",
+            "STAFF_KRB_NAME@MIT.EDU",
+            "STAFF_KRB_NAME",
+            "22222222222222",
+            "Doe, Jane",
+            "AA-B1-11",
+            "5555555555",
+            datetime.datetime(2023, 6, 30, 0, 0),
+            "27",
+            "Staff - Lincoln Labs",
+            "10000948",
+            "LL-Homeland Protection & Air Traffic Con",
+            "Part-time Flexible/LL",
+            "Part-time Flexible/LL",
         )
-        assert patron_xml_record == BeautifulSoup(
-            xml_file.read(),
+        staff_patron_all_values_record_2 = (
+            "444444444",
+            "STAFF_KRB_NAME@MIT.EDU",
+            "STAFF_KRB_NAME",
+            "44444444444444",
+            "Doe, Jane",
+            "AA-B1-11",
+            "5555555555",
+            datetime.datetime(2023, 6, 30, 0, 0),
+            "27",
+            "Staff - Lincoln Labs",
+            "10000948",
+            "LL-Homeland Protection & Air Traffic Con",
+            "Part-time Flexible/LL",
+            "Part-time Flexible/LL",
+        )
+        staff_patron_record_1 = BeautifulSoup(
+            xml_file_1.read(),
             features="xml",
         )
+        staff_patron_record_2 = BeautifulSoup(
+            xml_file_2.read(),
+            features="xml",
+        )
+        patron_xml_records = patron_xml_from_records(
+            "staff",
+            [staff_patron_all_values_record_1, staff_patron_all_values_record_2],
+        )
+        assert next(patron_xml_records) == staff_patron_record_1
+        assert next(patron_xml_records) == staff_patron_record_2
 
 
 @freeze_time("2023-03-01")
-def test_patron_xml_from_records_student_success(
-    student_patron_all_values_record,
-):
+def test_patron_xml_from_records_student_success():
+    student_patron_all_values_record_1 = (
+        "111111111",
+        "STUDENT_KRB_NAME@MIT.EDU",
+        "STUDENT_KRB_NAME",
+        "11111111111111",
+        "Doe",
+        "Jane",
+        "Janeth",
+        "100 Smith St",
+        "Apt 34",
+        "Cambridge",
+        "MA",
+        "00000",
+        "5555555555",
+        "4444444444",
+        "3333333333",
+        "G",
+        "1",
+    )
+    student_patron_all_values_record_2 = (
+        "333333333",
+        "STUDENT_KRB_NAME@MIT.EDU",
+        "STUDENT_KRB_NAME",
+        "33333333333333",
+        "Doe",
+        "Jane",
+        "Janeth",
+        "100 Smith St",
+        "Apt 34",
+        "Cambridge",
+        "MA",
+        "00000",
+        "5555555555",
+        "4444444444",
+        "3333333333",
+        "G",
+        "1",
+    )
     with open(
-        "tests/fixtures/student_patron_xml_record.xml", "r", encoding="utf8"
-    ) as xml_file:
-        patron_xml_record = next(
-            patron_xml_from_records("student", [student_patron_all_values_record])
-        )
-        assert patron_xml_record == BeautifulSoup(
-            xml_file.read(),
+        "tests/fixtures/student_patron_xml_record_1.xml", "r", encoding="utf8"
+    ) as xml_file_1, open(
+        "tests/fixtures/student_patron_xml_record_2.xml", "r", encoding="utf8"
+    ) as xml_file_2:
+        student_patron_record_1 = BeautifulSoup(
+            xml_file_1.read(),
             features="xml",
         )
+        student_patron_record_2 = BeautifulSoup(
+            xml_file_2.read(),
+            features="xml",
+        )
+        patron_xml_records = patron_xml_from_records(
+            "student",
+            [student_patron_all_values_record_1, student_patron_all_values_record_2],
+        )
+        assert next(patron_xml_records) == student_patron_record_1
+        assert next(patron_xml_records) == student_patron_record_2
 
 
 def test_populate_patron_common_fields_staff_all_values_success(
-    staff_patron_template, staff_patron_all_values_record
+    staff_patron_template, staff_patron_all_values_dict
 ):
     patron_xml_record = populate_patron_common_fields(
         staff_patron_template,
-        staff_patron_all_values_record,
+        staff_patron_all_values_dict,
         SIX_MONTHS,
         TWO_YEARS,
     )
@@ -74,27 +162,12 @@ def test_populate_patron_common_fields_staff_all_values_success(
 
 
 def test_populate_patron_common_fields_staff_no_krb_name_but_email_success(
-    staff_patron_template,
+    staff_patron_template, staff_patron_all_values_dict
 ):
-    staff_patron_record_no_krb_but_email = (
-        "222222222",
-        "STAFF_KRB_NAME@MIT.EDU",
-        None,
-        None,
-        None,
-        None,
-        None,
-        None,
-        None,
-        None,
-        None,
-        None,
-        None,
-        None,
-    )
+    staff_patron_all_values_dict["KRB_NAME_UPPERCASE"] = None
     patron_xml_record = populate_patron_common_fields(
         staff_patron_template,
-        staff_patron_record_no_krb_but_email,
+        staff_patron_all_values_dict,
         SIX_MONTHS,
         TWO_YEARS,
     )
@@ -107,14 +180,34 @@ def test_populate_patron_common_fields_staff_no_krb_name_but_email_success(
     assert (
         patron_xml_record.user_identifiers.user_identifier.value.string == "222222222"
     )
+    assert (
+        patron_xml_record.find_all("user_identifier")[1].value.string
+        == "22222222222222"
+    )
 
 
 def test_populate_patron_common_fields_staff_null_values_success(
-    staff_patron_template, staff_patron_null_values_record
+    staff_patron_template,
 ):
+    staff_patron_null_values_dict = {
+        "FULL_NAME": None,
+        "OFFICE_ADDRESS": None,
+        "OFFICE_PHONE": None,
+        "MIT_ID": "222222222",
+        "EMAIL_ADDRESS": None,
+        "APPOINTMENT_END_DATE": None,
+        "KRB_NAME_UPPERCASE": None,
+        "LIBRARY_PERSON_TYPE_CODE": None,
+        "LIBRARY_PERSON_TYPE": None,
+        "ORG_UNIT_ID": None,
+        "ORG_UNIT_TITLE": None,
+        "POSITION_TITLE": None,
+        "DIRECTORY_TITLE": None,
+        "LIBRARY_ID": None,
+    }
     patron_xml_record = populate_patron_common_fields(
         staff_patron_template,
-        staff_patron_null_values_record,
+        staff_patron_null_values_dict,
         SIX_MONTHS,
         TWO_YEARS,
     )
@@ -128,11 +221,11 @@ def test_populate_patron_common_fields_staff_null_values_success(
 
 
 def test_populate_patron_common_fields_student_all_values_success(
-    student_patron_template, student_patron_all_values_record
+    student_patron_template, student_patron_all_values_dict
 ):
     patron_xml_record = populate_patron_common_fields(
         student_patron_template,
-        student_patron_all_values_record,
+        student_patron_all_values_dict,
         SIX_MONTHS,
         TWO_YEARS,
     )
@@ -153,30 +246,12 @@ def test_populate_patron_common_fields_student_all_values_success(
 
 
 def test_populate_patron_common_fields_student_no_krb_name_success(
-    student_patron_template,
+    student_patron_template, student_patron_all_values_dict
 ):
-    student_patron_no_krb_but_email = (
-        "111111111",
-        "STUDENT_KRB_NAME@MIT.EDU",
-        None,
-        None,
-        None,
-        None,
-        None,
-        None,
-        None,
-        None,
-        None,
-        None,
-        None,
-        None,
-        None,
-        None,
-        None,
-    )
+    student_patron_all_values_dict["KRB_NAME_UPPERCASE"] = None
     patron_xml_record = populate_patron_common_fields(
         student_patron_template,
-        student_patron_no_krb_but_email,
+        student_patron_all_values_dict,
         SIX_MONTHS,
         TWO_YEARS,
     )
@@ -190,14 +265,37 @@ def test_populate_patron_common_fields_student_no_krb_name_success(
     assert (
         patron_xml_record.user_identifiers.user_identifier.value.string == "111111111"
     )
+    assert (
+        patron_xml_record.find_all("user_identifier")[1].value.string
+        == "11111111111111"
+    )
 
 
 def test_populate_patron_common_fields_student_null_values_success(
-    student_patron_template, student_patron_null_values_record
+    student_patron_template,
 ):
+    student_patron_null_values_dict = {
+        "EMAIL_ADDRESS": None,
+        "FIRST_NAME": None,
+        "HOME_DEPARTMENT": None,
+        "KRB_NAME_UPPERCASE": None,
+        "LAST_NAME": None,
+        "LIBRARY_ID": None,
+        "MIDDLE_NAME": None,
+        "MIT_ID": "111111111",
+        "OFFICE_PHONE": None,
+        "STUDENT_YEAR": None,
+        "TERM_CITY": None,
+        "TERM_PHONE1": None,
+        "TERM_PHONE2": None,
+        "TERM_STATE": None,
+        "TERM_STREET1": None,
+        "TERM_STREET2": None,
+        "TERM_ZIP": None,
+    }
     patron_xml_record = populate_patron_common_fields(
         student_patron_template,
-        student_patron_null_values_record,
+        student_patron_null_values_dict,
         SIX_MONTHS,
         TWO_YEARS,
     )

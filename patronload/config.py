@@ -3,9 +3,11 @@ import os
 
 import sentry_sdk
 
-COMMON_FIELDS = ["MIT_ID", "EMAIL_ADDRESS", "KRB_NAME_UPPERCASE", "LIBRARY_ID"]
-
 STAFF_FIELDS = [
+    "MIT_ID",
+    "EMAIL_ADDRESS",
+    "KRB_NAME_UPPERCASE",
+    "LIBRARY_ID",
     "FULL_NAME",
     "OFFICE_ADDRESS",
     "OFFICE_PHONE",
@@ -19,6 +21,10 @@ STAFF_FIELDS = [
 ]
 
 STUDENT_FIELDS = [
+    "MIT_ID",
+    "EMAIL_ADDRESS",
+    "KRB_NAME_UPPERCASE",
+    "LIBRARY_ID",
     "LAST_NAME",
     "FIRST_NAME",
     "MIDDLE_NAME",

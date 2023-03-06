@@ -23,46 +23,46 @@ def config_values_fixture():
 
 
 @pytest.fixture()
-def staff_patron_null_values_record():
-    return (
-        "222222222",
-        None,
-        None,
-        None,
-        None,
-        None,
-        None,
-        None,
-        None,
-        None,
-        None,
-        None,
-        None,
-        None,
-    )
+def staff_patron_all_values_dict():
+    return {
+        "FULL_NAME": "Doe, Jane",
+        "OFFICE_ADDRESS": "AA-B1-11",
+        "OFFICE_PHONE": "5555555555",
+        "MIT_ID": "222222222",
+        "EMAIL_ADDRESS": "STAFF_KRB_NAME@MIT.EDU",
+        "APPOINTMENT_END_DATE": datetime.datetime(2023, 6, 30, 0, 0),
+        "KRB_NAME_UPPERCASE": "STAFF_KRB_NAME",
+        "LIBRARY_PERSON_TYPE_CODE": "27",
+        "LIBRARY_PERSON_TYPE": "Staff - Lincoln Labs",
+        "ORG_UNIT_ID": "10000948",
+        "ORG_UNIT_TITLE": "LL-Homeland Protection & Air Traffic Con",
+        "POSITION_TITLE": "Part-time Flexible/LL",
+        "DIRECTORY_TITLE": "Part-time Flexible/LL",
+        "LIBRARY_ID": "22222222222222",
+    }
 
 
 @pytest.fixture()
-def student_patron_null_values_record():
-    return (
-        "111111111",
-        None,
-        None,
-        None,
-        None,
-        None,
-        None,
-        None,
-        None,
-        None,
-        None,
-        None,
-        None,
-        None,
-        None,
-        None,
-        None,
-    )
+def student_patron_all_values_dict():
+    return {
+        "MIT_ID": "111111111",
+        "LAST_NAME": "Doe",
+        "FIRST_NAME": "Jane",
+        "MIDDLE_NAME": "Janeth",
+        "TERM_STREET1": "100 Smith St",
+        "TERM_STREET2": "Apt 34",
+        "TERM_CITY": "Cambridge",
+        "TERM_STATE": "MA",
+        "TERM_ZIP": "00000",
+        "TERM_PHONE1": "5555555555",
+        "TERM_PHONE2": "4444444444",
+        "OFFICE_PHONE": "3333333333",
+        "STUDENT_YEAR": "G",
+        "EMAIL_ADDRESS": "STUDENT_KRB_NAME@MIT.EDU",
+        "KRB_NAME_UPPERCASE": "STUDENT_KRB_NAME",
+        "HOME_DEPARTMENT": "1",
+        "LIBRARY_ID": "11111111111111",
+    }
 
 
 @pytest.fixture()

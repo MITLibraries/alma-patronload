@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="utf-8"?>
+<user>
+    <record_type desc="Public">PUBLIC</record_type>
+    <primary_id>STUDENT_KRB_NAME@MIT.EDU</primary_id>
+    <first_name />
+    <middle_name />
+    <last_name />
+    <user_title desc="" />
+    <job_category desc="" />
+    <job_description />
+    <user_group />
+    <campus_code desc="" />
+    <web_site_url />
+    <cataloger_level desc="[00] Default Level">00</cataloger_level>
+    <preferred_language desc="English">en</preferred_language>
+    <expiry_date>2023-09-01Z</expiry_date>
+    <purge_date>2025-09-01Z</purge_date>
+    <account_type desc="External">EXTERNAL</account_type>
+    <external_id>SIS</external_id>
+    <password />
+    <force_password_change />
+    <status desc="Active">ACTIVE</status>
+    <status_date />
+    <contact_info>
+        <addresses>
+            <address preferred="true" segment_type="External">
+                <line1 />
+                <line3 />
+                <city />
+                <state_province />
+                <postal_code />
+                <country desc="" />
+                <address_note>User Address Type: Mailing address</address_note>
+                <address_types>
+                    <address_type desc="Work">work</address_type>
+                </address_types>
+            </address>
+        </addresses>
+        <emails>
+            <email preferred="true" segment_type="External">
+                <email_address>STUDENT_KRB_NAME@MIT.EDU</email_address>
+                <email_types>
+                    <email_type desc="Work">work</email_type>
+                </email_types>
+            </email>
+        </emails>
+        <phones>
+            <phone preferred="true" preferred_sms="false" segment_type="External">
+                <phone_number />
+                <phone_types>
+                    <phone_type desc="Office">office</phone_type>
+                </phone_types>
+            </phone>
+            <phone preferred="false" preferred_sms="false" segment_type="External">
+                <phone_number />
+                <phone_types>
+                    <phone_type desc="Home">home</phone_type>
+                </phone_types>
+            </phone>
+        </phones>
+    </contact_info>
+    <pref_first_name />
+    <pref_middle_name />
+    <pref_last_name />
+    <pref_name_suffix />
+    <is_researcher />
+    <user_identifiers>
+        <user_identifier segment_type="External">
+            <id_type desc="Additional">02</id_type>
+            <value>333333333</value>
+            <status>ACTIVE</status>
+        </user_identifier>
+        <user_identifier segment_type="External">
+            <id_type desc="Barcode">01</id_type>
+            <value>33333333333333</value>
+            <status>ACTIVE</status>
+        </user_identifier>
+    </user_identifiers>
+    <user_roles>
+        <user_role>
+            <status desc="Active">ACTIVE</status>
+            <scope desc="Massachusetts Institute of Technology">01MIT_INST</scope>
+            <role_type desc="Patron">200</role_type>
+            <parameters />
+        </user_role>
+    </user_roles>
+    <user_blocks />
+    <user_notes />
+    <user_statistics>
+        <user_statistic segment_type="External">
+            <statistic_category desc="" />
+            <category_type desc="Department">DEPT</category_type>
+        </user_statistic>
+    </user_statistics>
+    <proxy_for_users />
+</user>
