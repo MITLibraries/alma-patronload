@@ -39,12 +39,9 @@ def populate_patron_common_fields(
         patron_dict: A dict of patron record values.
     """
     patron = deepcopy(patron_template)
-    primary_id = ""
-    if patron_dict["KRB_NAME_UPPERCASE"]:
-        primary_id = f"{patron_dict['KRB_NAME_UPPERCASE']}@MIT.EDU"
-    elif patron_dict["EMAIL_ADDRESS"]:
-        primary_id = patron_dict["EMAIL_ADDRESS"]
-    patron.primary_id.string = primary_id  # type: ignore[union-attr]
+    patron.primary_id.string = (  # type: ignore[union-attr]
+        patron_dict["KRB_NAME_UPPERCASE"] + "@MIT.EDU"
+    )
     patron.expiry_date.string = six_months  # type: ignore[union-attr]
     patron.purge_date.string = two_years  # type: ignore[union-attr]
 
@@ -60,7 +57,7 @@ def populate_patron_common_fields(
             user_identifier.value.string = patron_dict["MIT_ID"] or ""
         elif user_identifier.find("id_type", desc="Barcode"):
             if patron_dict["LIBRARY_ID"] and patron_dict["LIBRARY_ID"] != "NONE":
-                user_identifier.value.string = patron_dict["LIBRARY_ID"] or ""
+                user_identifier.value.string = patron_dict["LIBRARY_ID"]
             else:
                 user_identifier.decompose()
     return patron
@@ -88,20 +85,22 @@ def patron_xml_from_records(
         ) + "Z"
 
         for patron_record in patron_records:
-            if patron_type == "staff":
-                staff_patron_dict = dict(zip(STAFF_FIELDS, patron_record))
-                patron = populate_patron_common_fields(
-                    patron_template,
-                    staff_patron_dict,
+            if patron_record[2]:  # Check for KRB_NAME_UPPERCASE field
+                template = deepcopy(patron_template)
+                if patron_type == "staff":
+                    patron_dict = dict(zip(STAFF_FIELDS, patron_record))
+                elif patron_type == "student":
+                    patron_dict = dict(zip(STUDENT_FIELDS, patron_record))
+                patron_xml = populate_patron_common_fields(
+                    template,
+                    patron_dict,
                     six_months,
                     two_years,
                 )
-            elif patron_type == "student":
-                student_patron_dict = dict(zip(STUDENT_FIELDS, patron_record))
-                patron = populate_patron_common_fields(
-                    patron_template,
-                    student_patron_dict,
-                    six_months,
-                    two_years,
+                yield patron_xml
+            else:
+                logger.error(
+                    "Rejecting record # '%s' as it is missing field KRB_NAME_UPPERCASE",
+                    patron_record[0],
                 )
-            yield patron
+                continue

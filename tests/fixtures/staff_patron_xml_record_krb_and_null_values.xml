@@ -37,14 +37,7 @@
                 </address_types>
             </address>
         </addresses>
-        <emails>
-            <email preferred="true" segment_type="External">
-                <email_address>STAFF_KRB_NAME@MIT.EDU</email_address>
-                <email_types>
-                    <email_type desc="Work">work</email_type>
-                </email_types>
-            </email>
-        </emails>
+        <emails />
         <phones>
             <phone preferred="true" preferred_sms="false" segment_type="External">
                 <phone_number />
@@ -62,12 +55,7 @@
     <user_identifiers>
         <user_identifier segment_type="External">
             <id_type desc="Additional">02</id_type>
-            <value>222222222</value>
-            <status>ACTIVE</status>
-        </user_identifier>
-        <user_identifier segment_type="External">
-            <id_type desc="Barcode">01</id_type>
-            <value>22222222222222</value>
+            <value>666666666</value>
             <status>ACTIVE</status>
         </user_identifier>
     </user_identifiers>

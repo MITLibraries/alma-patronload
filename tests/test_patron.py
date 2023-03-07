@@ -22,29 +22,31 @@ def test_format_phone_number_invalid_value_is_returned():
 
 
 @freeze_time("2023-03-01")
-def test_patron_xml_from_records_staff_success():
+def test_patron_xml_from_records_staff_success(caplog):
     with open(
-        "tests/fixtures/staff_patron_xml_record_1.xml", "r", encoding="utf8"
-    ) as xml_file_1, open(
-        "tests/fixtures/staff_patron_xml_record_2.xml", "r", encoding="utf8"
-    ) as xml_file_2:
-        staff_patron_all_values_record_1 = (
+        "tests/fixtures/staff_patron_xml_record_all_values.xml", "r", encoding="utf8"
+    ) as xml_file_all_values, open(
+        "tests/fixtures/staff_patron_xml_record_krb_and_null_values.xml",
+        "r",
+        encoding="utf8",
+    ) as xml_file_krb_and_null_values:
+        staff_database_record_with_null_values = (
             "222222222",
-            "STAFF_KRB_NAME@MIT.EDU",
-            "STAFF_KRB_NAME",
-            "22222222222222",
-            "Doe, Jane",
-            "AA-B1-11",
-            "5555555555",
-            datetime.datetime(2023, 6, 30, 0, 0),
-            "27",
-            "Staff - Lincoln Labs",
-            "10000948",
-            "LL-Homeland Protection & Air Traffic Con",
-            "Part-time Flexible/LL",
-            "Part-time Flexible/LL",
+            None,
+            None,
+            None,
+            None,
+            None,
+            None,
+            None,
+            None,
+            None,
+            None,
+            None,
+            None,
+            None,
         )
-        staff_patron_all_values_record_2 = (
+        staff_database_record_with_all_values = (
             "444444444",
             "STAFF_KRB_NAME@MIT.EDU",
             "STAFF_KRB_NAME",
@@ -60,81 +62,137 @@ def test_patron_xml_from_records_staff_success():
             "Part-time Flexible/LL",
             "Part-time Flexible/LL",
         )
-        staff_patron_record_1 = BeautifulSoup(
-            xml_file_1.read(),
+        staff_database_record_krb_and_null_values = (
+            "666666666",
+            None,
+            "STAFF_KRB_NAME",
+            None,
+            None,
+            None,
+            None,
+            None,
+            None,
+            None,
+            None,
+            None,
+            None,
+            None,
+        )
+        expected_staff_xml_output_from_all_values = BeautifulSoup(
+            xml_file_all_values.read(),
             features="xml",
         )
-        staff_patron_record_2 = BeautifulSoup(
-            xml_file_2.read(),
+        expected_staff_xml_output_krb_and_null_values = BeautifulSoup(
+            xml_file_krb_and_null_values.read(),
             features="xml",
         )
-        patron_xml_records = patron_xml_from_records(
+        results = patron_xml_from_records(
             "staff",
-            [staff_patron_all_values_record_1, staff_patron_all_values_record_2],
+            [
+                staff_database_record_with_null_values,
+                staff_database_record_with_all_values,
+                staff_database_record_krb_and_null_values,
+            ],
         )
-        assert next(patron_xml_records) == staff_patron_record_1
-        assert next(patron_xml_records) == staff_patron_record_2
+        assert next(results) == expected_staff_xml_output_from_all_values
+        assert (
+            "Rejecting record # '222222222' as it is missing field KRB_NAME_UPPERCASE"
+            in caplog.text
+        )
+        assert (
+            next(results).prettify()
+            == expected_staff_xml_output_krb_and_null_values.prettify()
+        )
 
 
 @freeze_time("2023-03-01")
-def test_patron_xml_from_records_student_success():
-    student_patron_all_values_record_1 = (
-        "111111111",
-        "STUDENT_KRB_NAME@MIT.EDU",
-        "STUDENT_KRB_NAME",
-        "11111111111111",
-        "Doe",
-        "Jane",
-        "Janeth",
-        "100 Smith St",
-        "Apt 34",
-        "Cambridge",
-        "MA",
-        "00000",
-        "5555555555",
-        "4444444444",
-        "3333333333",
-        "G",
-        "1",
-    )
-    student_patron_all_values_record_2 = (
-        "333333333",
-        "STUDENT_KRB_NAME@MIT.EDU",
-        "STUDENT_KRB_NAME",
-        "33333333333333",
-        "Doe",
-        "Jane",
-        "Janeth",
-        "100 Smith St",
-        "Apt 34",
-        "Cambridge",
-        "MA",
-        "00000",
-        "5555555555",
-        "4444444444",
-        "3333333333",
-        "G",
-        "1",
-    )
+def test_patron_xml_from_records_student_success(caplog):
     with open(
-        "tests/fixtures/student_patron_xml_record_1.xml", "r", encoding="utf8"
-    ) as xml_file_1, open(
-        "tests/fixtures/student_patron_xml_record_2.xml", "r", encoding="utf8"
-    ) as xml_file_2:
-        student_patron_record_1 = BeautifulSoup(
-            xml_file_1.read(),
+        "tests/fixtures/student_patron_xml_record_all_values.xml", "r", encoding="utf8"
+    ) as xml_file_all_values, open(
+        "tests/fixtures/student_patron_xml_record_krb_and_null_values.xml",
+        "r",
+        encoding="utf8",
+    ) as xml_file_krb_and_null_values:
+        student_database_record_with_null_values = (
+            "111111111",
+            None,
+            None,
+            None,
+            None,
+            None,
+            None,
+            None,
+            None,
+            None,
+            None,
+            None,
+            None,
+            None,
+            None,
+            None,
+            None,
+        )
+        student_database_record_with_all_values = (
+            "333333333",
+            "STUDENT_KRB_NAME@MIT.EDU",
+            "STUDENT_KRB_NAME",
+            "33333333333333",
+            "Doe",
+            "Jane",
+            "Janeth",
+            "100 Smith St",
+            "Apt 34",
+            "Cambridge",
+            "MA",
+            "00000",
+            "5555555555",
+            "4444444444",
+            "3333333333",
+            "G",
+            "1",
+        )
+        student_database_record_krb_and_null_values = (
+            "555555555",
+            None,
+            "STUDENT_KRB_NAME",
+            None,
+            None,
+            None,
+            None,
+            None,
+            None,
+            None,
+            None,
+            None,
+            None,
+            None,
+        )
+        expected_student_xml_output_from_all_values = BeautifulSoup(
+            xml_file_all_values.read(),
             features="xml",
         )
-        student_patron_record_2 = BeautifulSoup(
-            xml_file_2.read(),
+        expected_student_xml_output_krb_and_null_values = BeautifulSoup(
+            xml_file_krb_and_null_values.read(),
             features="xml",
         )
-        patron_xml_records = patron_xml_from_records(
+        results = patron_xml_from_records(
             "student",
-            [student_patron_all_values_record_1, student_patron_all_values_record_2],
+            [
+                student_database_record_with_null_values,
+                student_database_record_with_all_values,
+                student_database_record_krb_and_null_values,
+            ],
         )
-        assert next(patron_xml_records) == student_patron_record_1
-        assert next(patron_xml_records) == student_patron_record_2
+        assert next(results) == expected_student_xml_output_from_all_values
+        assert (
+            "Rejecting record # '111111111' as it is missing field KRB_NAME_UPPERCASE"
+            in caplog.text
+        )
+        assert (
+            next(results).prettify()
+            == expected_student_xml_output_krb_and_null_values.prettify()
+        )
 
 
 def test_populate_patron_common_fields_staff_all_values_success(
@@ -152,34 +210,7 @@ def test_populate_patron_common_fields_staff_all_values_success(
     assert (
         patron_xml_record.emails.email.email_address.string == "STAFF_KRB_NAME@MIT.EDU"
     )
-    assert (
-        patron_xml_record.user_identifiers.user_identifier.value.string == "222222222"
-    )
-    assert (
-        patron_xml_record.find_all("user_identifier")[1].value.string
-        == "22222222222222"
-    )
-
-
-def test_populate_patron_common_fields_staff_no_krb_name_but_email_success(
-    staff_patron_template, staff_patron_all_values_dict
-):
-    staff_patron_all_values_dict["KRB_NAME_UPPERCASE"] = None
-    patron_xml_record = populate_patron_common_fields(
-        staff_patron_template,
-        staff_patron_all_values_dict,
-        SIX_MONTHS,
-        TWO_YEARS,
-    )
-    assert patron_xml_record.primary_id.string == "STAFF_KRB_NAME@MIT.EDU"
-    assert patron_xml_record.expiry_date.string == "2023-09-01Z"
-    assert patron_xml_record.purge_date.string == "2025-09-01Z"
-    assert (
-        patron_xml_record.emails.email.email_address.string == "STAFF_KRB_NAME@MIT.EDU"
-    )
-    assert (
-        patron_xml_record.user_identifiers.user_identifier.value.string == "222222222"
-    )
+    assert patron_xml_record.find_all("user_identifier")[0].value.string == "222222222"
     assert (
         patron_xml_record.find_all("user_identifier")[1].value.string
         == "22222222222222"
@@ -196,7 +227,7 @@ def test_populate_patron_common_fields_staff_null_values_success(
         "MIT_ID": "222222222",
         "EMAIL_ADDRESS": None,
         "APPOINTMENT_END_DATE": None,
-        "KRB_NAME_UPPERCASE": None,
+        "KRB_NAME_UPPERCASE": "STAFF_KRB_NAME",
         "LIBRARY_PERSON_TYPE_CODE": None,
         "LIBRARY_PERSON_TYPE": None,
         "ORG_UNIT_ID": None,
@@ -216,7 +247,7 @@ def test_populate_patron_common_fields_staff_null_values_success(
     assert (
         patron_xml_record.user_identifiers.user_identifier.value.string == "222222222"
     )
-    assert not list(list(patron_xml_record.emails.children))
+    assert not list(patron_xml_record.emails.children)
     assert len(list(patron_xml_record.find_all("user_identifier"))) == 1
 
 
@@ -236,35 +267,7 @@ def test_populate_patron_common_fields_student_all_values_success(
         patron_xml_record.emails.email.email_address.string
         == "STUDENT_KRB_NAME@MIT.EDU"
     )
-    assert (
-        patron_xml_record.user_identifiers.user_identifier.value.string == "111111111"
-    )
-    assert (
-        patron_xml_record.find_all("user_identifier")[1].value.string
-        == "11111111111111"
-    )
-
-
-def test_populate_patron_common_fields_student_no_krb_name_success(
-    student_patron_template, student_patron_all_values_dict
-):
-    student_patron_all_values_dict["KRB_NAME_UPPERCASE"] = None
-    patron_xml_record = populate_patron_common_fields(
-        student_patron_template,
-        student_patron_all_values_dict,
-        SIX_MONTHS,
-        TWO_YEARS,
-    )
-    assert patron_xml_record.primary_id.string == "STUDENT_KRB_NAME@MIT.EDU"
-    assert patron_xml_record.expiry_date.string == "2023-09-01Z"
-    assert patron_xml_record.purge_date.string == "2025-09-01Z"
-    assert (
-        patron_xml_record.emails.email.email_address.string
-        == "STUDENT_KRB_NAME@MIT.EDU"
-    )
-    assert (
-        patron_xml_record.user_identifiers.user_identifier.value.string == "111111111"
-    )
+    assert patron_xml_record.find_all("user_identifier")[0].value.string == "111111111"
     assert (
         patron_xml_record.find_all("user_identifier")[1].value.string
         == "11111111111111"
@@ -278,7 +281,7 @@ def test_populate_patron_common_fields_student_null_values_success(
         "EMAIL_ADDRESS": None,
         "FIRST_NAME": None,
         "HOME_DEPARTMENT": None,
-        "KRB_NAME_UPPERCASE": None,
+        "KRB_NAME_UPPERCASE": "STUDENT_KRB_NAME",
         "LAST_NAME": None,
         "LIBRARY_ID": None,
         "MIDDLE_NAME": None,
@@ -304,5 +307,5 @@ def test_populate_patron_common_fields_student_null_values_success(
     assert (
         patron_xml_record.user_identifiers.user_identifier.value.string == "111111111"
     )
-    assert not list(list(patron_xml_record.emails.children))
+    assert not list(patron_xml_record.emails.children)
     assert len(list(patron_xml_record.find_all("user_identifier"))) == 1
