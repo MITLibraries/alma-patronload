@@ -96,9 +96,8 @@ def test_patron_xml_from_records_staff_success(caplog):
         )
         assert next(results) == expected_staff_xml_output_from_all_values
         assert (
-            "Rejecting record # '222222222' as it is missing field KRB_NAME_UPPERCASE"
-            in caplog.text
-        )
+            "Rejected record: MIT ID # '222222222', missing field KRB_NAME_UPPERCASE"
+        ) in caplog.text
         assert (
             next(results).prettify()
             == expected_staff_xml_output_krb_and_null_values.prettify()
@@ -186,7 +185,7 @@ def test_patron_xml_from_records_student_success(caplog):
         )
         assert next(results) == expected_student_xml_output_from_all_values
         assert (
-            "Rejecting record # '111111111' as it is missing field KRB_NAME_UPPERCASE"
+            "Rejected record: MIT ID # '111111111', missing field KRB_NAME_UPPERCASE"
             in caplog.text
         )
         assert (

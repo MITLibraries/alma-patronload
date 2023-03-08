@@ -38,21 +38,20 @@ def populate_patron_common_fields(
         patron: An XML template for a patron record
         patron_dict: A dict of patron record values.
     """
-    patron = deepcopy(patron_template)
-    patron.primary_id.string = (  # type: ignore[union-attr]
+    patron_template.primary_id.string = (  # type: ignore[union-attr]
         patron_dict["KRB_NAME_UPPERCASE"] + "@MIT.EDU"
     )
-    patron.expiry_date.string = six_months  # type: ignore[union-attr]
-    patron.purge_date.string = two_years  # type: ignore[union-attr]
+    patron_template.expiry_date.string = six_months  # type: ignore[union-attr]
+    patron_template.purge_date.string = two_years  # type: ignore[union-attr]
 
     if patron_dict["EMAIL_ADDRESS"]:
-        patron.email_address.string = patron_dict[  # type: ignore[union-attr]
+        patron_template.email_address.string = patron_dict[  # type: ignore[union-attr]
             "EMAIL_ADDRESS"
         ]
     else:
-        patron.emails.clear()  # type: ignore[union-attr]
+        patron_template.emails.clear()  # type: ignore[union-attr]
 
-    for user_identifier in patron.find_all("user_identifier"):
+    for user_identifier in patron_template.find_all("user_identifier"):
         if user_identifier.find("id_type", desc="Additional"):
             user_identifier.value.string = patron_dict["MIT_ID"] or ""
         elif user_identifier.find("id_type", desc="Barcode"):
@@ -60,7 +59,7 @@ def populate_patron_common_fields(
                 user_identifier.value.string = patron_dict["LIBRARY_ID"]
             else:
                 user_identifier.decompose()
-    return patron
+    return patron_template
 
 
 def patron_xml_from_records(
@@ -100,7 +99,7 @@ def patron_xml_from_records(
                 yield patron_xml
             else:
                 logger.error(
-                    "Rejecting record # '%s' as it is missing field KRB_NAME_UPPERCASE",
+                    "Rejected record: MIT ID # '%s', missing field KRB_NAME_UPPERCASE",
                     patron_record[0],
                 )
                 continue
