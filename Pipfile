@@ -7,6 +7,9 @@ name = "pypi"
 click = "*"
 sentry-sdk = "*"
 oracledb = "*"
+bs4 = "*"
+lxml = "*"
+python-dateutil = "*"
 
 [dev-packages]
 bandit = "*"
@@ -16,6 +19,9 @@ coveralls = "*"
 mypy = "*"
 pylama = {extras = ["all"], version = "*"}
 pytest = "*"
+freezegun = "*"
+types-python-dateutil = "*"
+types-beautifulsoup4 = "*"
 
 [requires]
 python_version = "3.11"

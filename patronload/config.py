@@ -3,6 +3,43 @@ import os
 
 import sentry_sdk
 
+STAFF_FIELDS = [
+    "MIT_ID",
+    "EMAIL_ADDRESS",
+    "KRB_NAME_UPPERCASE",
+    "LIBRARY_ID",
+    "FULL_NAME",
+    "OFFICE_ADDRESS",
+    "OFFICE_PHONE",
+    "APPOINTMENT_END_DATE",
+    "LIBRARY_PERSON_TYPE_CODE",
+    "LIBRARY_PERSON_TYPE",
+    "ORG_UNIT_ID",
+    "ORG_UNIT_TITLE",
+    "POSITION_TITLE",
+    "DIRECTORY_TITLE",
+]
+
+STUDENT_FIELDS = [
+    "MIT_ID",
+    "EMAIL_ADDRESS",
+    "KRB_NAME_UPPERCASE",
+    "LIBRARY_ID",
+    "LAST_NAME",
+    "FIRST_NAME",
+    "MIDDLE_NAME",
+    "TERM_STREET1",
+    "TERM_STREET2",
+    "TERM_CITY",
+    "TERM_STATE",
+    "TERM_ZIP",
+    "TERM_PHONE1",
+    "TERM_PHONE2",
+    "OFFICE_PHONE",
+    "STUDENT_YEAR",
+    "HOME_DEPARTMENT",
+]
+
 
 def configure_logger(logger: logging.Logger, log_level_string: str) -> str:
     if log_level_string.upper() not in logging.getLevelNamesMapping():
