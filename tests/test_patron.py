@@ -6,7 +6,9 @@ from freezegun import freeze_time
 from patronload.patron import (
     format_phone_number,
     patron_xml_from_records,
-    populate_patron_common_fields,
+    populate_common_fields,
+    populate_staff_fields,
+    populate_student_fields,
 )
 
 SIX_MONTHS = "2023-09-01Z"
@@ -194,10 +196,10 @@ def test_patron_xml_from_records_student_success(caplog):
         )
 
 
-def test_populate_patron_common_fields_staff_all_values_success(
+def test_populate_common_fields_staff_all_values_success(
     staff_patron_template, staff_patron_all_values_dict
 ):
-    patron_xml_record = populate_patron_common_fields(
+    patron_xml_record = populate_common_fields(
         staff_patron_template,
         staff_patron_all_values_dict,
         SIX_MONTHS,
@@ -216,7 +218,7 @@ def test_populate_patron_common_fields_staff_all_values_success(
     )
 
 
-def test_populate_patron_common_fields_staff_null_values_success(
+def test_populate_common_fields_staff_null_values_success(
     staff_patron_template,
 ):
     staff_patron_null_values_dict = {
@@ -235,7 +237,7 @@ def test_populate_patron_common_fields_staff_null_values_success(
         "DIRECTORY_TITLE": None,
         "LIBRARY_ID": None,
     }
-    patron_xml_record = populate_patron_common_fields(
+    patron_xml_record = populate_common_fields(
         staff_patron_template,
         staff_patron_null_values_dict,
         SIX_MONTHS,
@@ -250,10 +252,10 @@ def test_populate_patron_common_fields_staff_null_values_success(
     assert len(list(patron_xml_record.find_all("user_identifier"))) == 1
 
 
-def test_populate_patron_common_fields_student_all_values_success(
+def test_populate_common_fields_student_all_values_success(
     student_patron_template, student_patron_all_values_dict
 ):
-    patron_xml_record = populate_patron_common_fields(
+    patron_xml_record = populate_common_fields(
         student_patron_template,
         student_patron_all_values_dict,
         SIX_MONTHS,
@@ -273,7 +275,7 @@ def test_populate_patron_common_fields_student_all_values_success(
     )
 
 
-def test_populate_patron_common_fields_student_null_values_success(
+def test_populate_common_fields_student_null_values_success(
     student_patron_template,
 ):
     student_patron_null_values_dict = {
@@ -295,7 +297,7 @@ def test_populate_patron_common_fields_student_null_values_success(
         "TERM_STREET2": None,
         "TERM_ZIP": None,
     }
-    patron_xml_record = populate_patron_common_fields(
+    patron_xml_record = populate_common_fields(
         student_patron_template,
         student_patron_null_values_dict,
         SIX_MONTHS,
@@ -308,3 +310,134 @@ def test_populate_patron_common_fields_student_null_values_success(
     )
     assert not list(patron_xml_record.emails.children)
     assert len(list(patron_xml_record.find_all("user_identifier"))) == 1
+
+
+def test_populate_staff_fields_all_values_success(
+    staff_patron_template, staff_patron_all_values_dict
+):
+    patron_xml_record = populate_staff_fields(
+        staff_patron_template,
+        staff_patron_all_values_dict,
+    )
+    assert patron_xml_record.last_name.string == "Doe"
+    assert patron_xml_record.first_name.string == "Jane"
+    assert patron_xml_record.user_group.string == "27"
+    assert patron_xml_record.user_group["desc"] == "Staff - Lincoln Labs"
+    assert patron_xml_record.line1.string == "AA-B1-11"
+    assert patron_xml_record.phone_number.string == "555-555-5555"
+    assert patron_xml_record.statistic_category.string == "NK"
+    assert (
+        patron_xml_record.statistic_category["desc"]
+        == "LL-Homeland Protection & Air Traffic Con"
+    )
+
+
+def test_populate_staff_fields_null_values_success(
+    staff_patron_template, staff_patron_all_values_dict
+):
+    for key in [k for k in staff_patron_all_values_dict.keys() if k != "MIT_ID"]:
+        staff_patron_all_values_dict[key] = None
+    patron_xml_record = populate_staff_fields(
+        staff_patron_template,
+        staff_patron_all_values_dict,
+    )
+    assert patron_xml_record.last_name.string is None
+    assert patron_xml_record.first_name.string is None
+    assert patron_xml_record.user_group.string == ""
+    assert patron_xml_record.user_group["desc"] == ""
+    assert patron_xml_record.line1.string == "NO ADDRESS ON FILE IN DATA WAREHOUSE"
+    assert patron_xml_record.phones.is_empty_element
+    assert patron_xml_record.statistic_category.string == "ZQ"
+    assert patron_xml_record.statistic_category["desc"] == "Unknown"
+
+
+def test_populate_student_fields_all_values_success(
+    student_patron_template, student_patron_all_values_dict
+):
+    patron_xml_record = populate_student_fields(
+        student_patron_template,
+        student_patron_all_values_dict,
+    )
+    assert patron_xml_record.first_name.string == "Jane"
+    assert patron_xml_record.middle_name.string == "Janeth"
+    assert patron_xml_record.last_name.string == "Doe"
+    assert patron_xml_record.address.line1.string == "100 Smith St"
+    assert patron_xml_record.line3.string == "Apt 34"
+    assert patron_xml_record.city.string == "Cambridge"
+    assert patron_xml_record.state_province.string == "MA"
+    assert patron_xml_record.postal_code.string == "00000"
+    assert patron_xml_record.find_all("phone_number")[0].string == "333-333-3333"
+    assert patron_xml_record.find_all("phone_number")[1].string == "555-555-5555"
+    assert patron_xml_record.statistic_category.string == "SN"
+    assert patron_xml_record.user_group.string == "32"
+
+
+def test_populate_student_fields_null_values_success(
+    student_patron_template, student_patron_all_values_dict
+):
+    for key in [k for k in student_patron_all_values_dict.keys() if k != "MIT_ID"]:
+        student_patron_all_values_dict[key] = None
+    patron_xml_record = populate_student_fields(
+        student_patron_template,
+        student_patron_all_values_dict,
+    )
+    assert patron_xml_record.first_name.string == ""
+    assert patron_xml_record.middle_name.string == ""
+    assert patron_xml_record.last_name.string == ""
+    assert (
+        patron_xml_record.address.line1.string == "NO ADDRESS ON FILE IN DATA WAREHOUSE"
+    )
+    assert patron_xml_record.line3.string == ""
+    assert patron_xml_record.city.string == ""
+    assert patron_xml_record.state_province.string == ""
+    assert patron_xml_record.postal_code.string == ""
+    assert patron_xml_record.phones.is_empty_element
+    assert patron_xml_record.statistic_category.string == "ZZ"
+    assert patron_xml_record.user_group.string is None
+
+
+def test_populate_student_fields_no_office_phone_success(
+    student_patron_template, student_patron_all_values_dict
+):
+    student_patron_all_values_dict["OFFICE_PHONE"] = None
+    patron_xml_record = populate_student_fields(
+        student_patron_template,
+        student_patron_all_values_dict,
+    )
+    assert patron_xml_record.phone_number.string == "555-555-5555"
+    assert len(list(patron_xml_record.find_all("phone_number"))) == 1
+
+
+def test_populate_student_fields_no_office_phone_no_term_phone1_success(
+    student_patron_template, student_patron_all_values_dict
+):
+    student_patron_all_values_dict["OFFICE_PHONE"] = None
+    student_patron_all_values_dict["TERM_PHONE1"] = None
+    patron_xml_record = populate_student_fields(
+        student_patron_template,
+        student_patron_all_values_dict,
+    )
+    assert patron_xml_record.phone_number.string == "444-444-4444"
+    assert len(list(patron_xml_record.find_all("phone_number"))) == 1
+
+
+def test_populate_student_fields_undergraduate_user_group_success(
+    student_patron_template, student_patron_all_values_dict
+):
+    student_patron_all_values_dict["STUDENT_YEAR"] = "1"
+    patron_xml_record = populate_student_fields(
+        student_patron_template,
+        student_patron_all_values_dict,
+    )
+    assert patron_xml_record.user_group.string == "31"
+
+
+def test_populate_student_fields_non_mit_user_group_success(
+    student_patron_template, student_patron_all_values_dict
+):
+    student_patron_all_values_dict["HOME_DEPARTMENT"] = "NIV"
+    patron_xml_record = populate_student_fields(
+        student_patron_template,
+        student_patron_all_values_dict,
+    )
+    assert patron_xml_record.user_group.string == "54"

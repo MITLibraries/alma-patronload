@@ -7,7 +7,12 @@ from typing import Any, Generator
 from bs4 import BeautifulSoup
 from dateutil.relativedelta import relativedelta
 
-from patronload.config import STAFF_FIELDS, STUDENT_FIELDS
+from patronload.config import (
+    STAFF_DEPARTMENTS,
+    STAFF_FIELDS,
+    STUDENT_DEPARTMENTS,
+    STUDENT_FIELDS,
+)
 
 logger = logging.getLogger(__name__)
 
@@ -22,7 +27,7 @@ def format_phone_number(phone_number: str) -> str:
     return re.sub(r"(\d{3})(\d{3})(\d{4})", r"\1-\2-\3", phone_number)
 
 
-def populate_patron_common_fields(
+def populate_common_fields(
     patron_template: BeautifulSoup,
     patron_dict: dict[str, Any],
     six_months: str,
@@ -35,7 +40,7 @@ def populate_patron_common_fields(
     STAFF_FIELDS and STUDENT_FIELDS value lists.
 
     Args:
-        patron: An XML template for a patron record
+        patron_template: An XML template for a patron record
         patron_dict: A dict of patron record values.
     """
     patron_template.primary_id.string = (  # type: ignore[union-attr]
@@ -59,6 +64,152 @@ def populate_patron_common_fields(
                 user_identifier.value.string = patron_dict["LIBRARY_ID"]
             else:
                 user_identifier.decompose()
+    return patron_template
+
+
+def populate_staff_fields(
+    patron_template: BeautifulSoup,
+    patron_dict: dict[str, Any],
+) -> BeautifulSoup:
+    """
+    Populate the staff fields in a patron record.
+
+    The order of the patron record fields must be in same order as they in the
+    STAFF_FIELDS value list.
+
+    Args:
+        patron_template: An XML template for a patron record
+        patron_dict: A dict of patron record values.
+    """
+    if patron_dict["FULL_NAME"]:
+        split_name = patron_dict["FULL_NAME"].split(",")
+        patron_template.last_name.string = (  # type: ignore[union-attr]
+            split_name[0].strip() or ""
+        )
+        patron_template.first_name.string = (  # type: ignore[union-attr]
+            split_name[1].strip() or ""
+        )
+
+    patron_template.user_group.string = (  # type: ignore[union-attr]
+        patron_dict["LIBRARY_PERSON_TYPE_CODE"] or ""
+    )
+    patron_template.user_group["desc"] = (  # type: ignore[index,union-attr]
+        patron_dict["LIBRARY_PERSON_TYPE"] or ""
+    )
+
+    patron_template.line1.string = (  # type: ignore[union-attr]
+        patron_dict["OFFICE_ADDRESS"]
+        if patron_dict["OFFICE_ADDRESS"]
+        else "NO ADDRESS ON FILE IN DATA WAREHOUSE"
+    )
+    if patron_dict["OFFICE_PHONE"]:
+        patron_template.find_all("phone_number")[0].string = format_phone_number(
+            patron_dict["OFFICE_PHONE"],
+        )
+    else:
+        patron_template.phones.clear()  # type: ignore[union-attr]
+
+    if patron_dict["ORG_UNIT_ID"] in STAFF_DEPARTMENTS:
+        patron_template.statistic_category.string = (  # type: ignore[union-attr]
+            STAFF_DEPARTMENTS[patron_dict["ORG_UNIT_ID"]]
+        )
+    else:
+        patron_template.statistic_category.string = "ZQ"  # type: ignore[union-attr]
+        logger.error(
+            "Unknown dept: '%s' in record with MIT ID # '%s'",
+            patron_dict["ORG_UNIT_ID"],
+            patron_dict["MIT_ID"],
+        )
+    patron_template.statistic_category["desc"] = (  # type: ignore[index,union-attr]
+        patron_dict["ORG_UNIT_TITLE"] or "Unknown"
+    )
+    return patron_template
+
+
+def populate_student_fields(
+    patron_template: BeautifulSoup,
+    patron_dict: dict[str, Any],
+) -> BeautifulSoup:
+    """
+    Populate the student fields in a patron record.
+
+    The order of the patron record fields must be in same order as they in the
+    STUDENT_FIELDS value list.
+
+    Args:
+        patron_template: An XML template for a patron record
+        patron_dict: A dict of patron record values.
+    """
+    patron_template.first_name.string = (  # type: ignore[union-attr]
+        patron_dict["FIRST_NAME"] or ""
+    )
+    patron_template.middle_name.string = (  # type: ignore[union-attr]
+        patron_dict["MIDDLE_NAME"] or ""
+    )
+    patron_template.last_name.string = (  # type: ignore[union-attr]
+        patron_dict["LAST_NAME"] or ""
+    )
+
+    patron_template.address.line1.string = (  # type: ignore[union-attr]
+        patron_dict["TERM_STREET1"]
+        if patron_dict["TERM_STREET1"]
+        else "NO ADDRESS ON FILE IN DATA WAREHOUSE"
+    )
+    patron_template.line3.string = (  # type: ignore[union-attr]
+        patron_dict["TERM_STREET2"] or ""
+    )
+    patron_template.city.string = (  # type: ignore[union-attr]
+        patron_dict["TERM_CITY"] or ""
+    )
+    patron_template.state_province.string = (  # type: ignore[union-attr]
+        patron_dict["TERM_STATE"] or ""
+    )
+    patron_template.postal_code.string = (  # type: ignore[union-attr]
+        patron_dict["TERM_ZIP"] or ""
+    )
+
+    office_phone_number = patron_template.find_all("phone_number")[0]
+    home_phone_number = patron_template.find_all("phone_number")[1]
+    if patron_dict["OFFICE_PHONE"] and patron_dict["TERM_PHONE1"]:
+        office_phone_number.string = format_phone_number(patron_dict["OFFICE_PHONE"])
+        home_phone_number.string = format_phone_number(patron_dict["TERM_PHONE1"])
+    elif (
+        patron_dict["OFFICE_PHONE"]
+        or patron_dict["TERM_PHONE1"]
+        or patron_dict["TERM_PHONE2"]
+    ):
+        home_phone_number.parent.decompose()
+        office_phone_number.string = (
+            format_phone_number(patron_dict["OFFICE_PHONE"])
+            if patron_dict["OFFICE_PHONE"]
+            else (
+                format_phone_number(patron_dict["TERM_PHONE1"])
+                if patron_dict["TERM_PHONE1"]
+                else format_phone_number(patron_dict["TERM_PHONE2"])
+            )
+        )
+    else:
+        patron_template.phones.clear()  # type: ignore[union-attr]
+
+    if patron_dict["HOME_DEPARTMENT"] in STUDENT_DEPARTMENTS:
+        patron_template.statistic_category.string = (  # type: ignore[union-attr]
+            STUDENT_DEPARTMENTS[patron_dict["HOME_DEPARTMENT"]]
+        )
+    else:
+        patron_template.statistic_category.string = "ZZ"  # type: ignore[union-attr]
+        logger.error("Unknown dept: %s", patron_dict["HOME_DEPARTMENT"])
+
+    # User Group codes
+    # 31 = Student - Undergraduate
+    # 32 = Student - Graduate
+    # 54 = Non-MIT - Cross-registered
+    if patron_dict["STUDENT_YEAR"]:
+        if re.search("^[1234Uu]$", patron_dict["STUDENT_YEAR"]):
+            patron_template.user_group.string = "31"  # type: ignore[union-attr]
+        elif re.search("^[Gg]$", patron_dict["STUDENT_YEAR"]):
+            patron_template.user_group.string = "32"  # type: ignore[union-attr]
+        if re.search("^NI[UVWTRH]$", patron_dict["HOME_DEPARTMENT"]):
+            patron_template.user_group.string = "54"  # type: ignore[union-attr]
     return patron_template
 
 
@@ -90,7 +241,7 @@ def patron_xml_from_records(
                     patron_dict = dict(zip(STAFF_FIELDS, patron_record))
                 elif patron_type == "student":
                     patron_dict = dict(zip(STUDENT_FIELDS, patron_record))
-                patron_xml = populate_patron_common_fields(
+                patron_xml = populate_common_fields(
                     template,
                     patron_dict,
                     six_months,
