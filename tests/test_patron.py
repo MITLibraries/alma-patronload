@@ -168,6 +168,9 @@ def test_patron_xml_from_records_student_success(caplog):
             None,
             None,
             None,
+            None,
+            None,
+            None,
         )
         expected_student_xml_output_from_all_values = BeautifulSoup(
             xml_file_all_values.read(),

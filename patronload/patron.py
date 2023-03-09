@@ -239,10 +239,12 @@ def patron_xml_from_records(
                 template = deepcopy(patron_template)
                 if patron_type == "staff":
                     patron_dict = dict(zip(STAFF_FIELDS, patron_record))
+                    updated_template = populate_staff_fields(template, patron_dict)
                 elif patron_type == "student":
                     patron_dict = dict(zip(STUDENT_FIELDS, patron_record))
+                    updated_template = populate_student_fields(template, patron_dict)
                 patron_xml = populate_common_fields(
-                    template,
+                    updated_template,
                     patron_dict,
                     six_months,
                     two_years,
