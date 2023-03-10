@@ -83,11 +83,10 @@ def configure_sentry() -> str:
 def load_config_values() -> dict:
     """Retrieve all required env variables to update the config_values dict."""
     config_values = {
-        "DATA_WAREHOUSE_USER": "user123",
-        "DATA_WAREHOUSE_PASSWORD": "pass123",
-        "DATA_WAREHOUSE_HOST": "http://localhost",
-        "DATA_WAREHOUSE_PORT": "1234",
-        "DATA_WAREHOUSE_SID": "database5678",
+        "DATAWAREHOUSE_CLOUDCONNECTOR_JSON": (
+            '{"USER": "user123",  "PASSWORD": "pass123", "HOST": "http://localhost", '
+            '"PORT": "1234", "PATH": "database5678"}'
+        ),
         "S3_BUCKET_NAME": "patronload",
         "S3_PATH": "/test/example/",
         "WORKSPACE": "test",

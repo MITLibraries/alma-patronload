@@ -6,6 +6,9 @@ from time import perf_counter
 import click
 
 from patronload.config import configure_logger, configure_sentry, load_config_values
+from patronload.database import (
+    create_database_connection,
+)
 
 logger = logging.getLogger(__name__)
 
@@ -24,7 +27,10 @@ def main() -> None:
     )
     logger.info("Running patronload process")
 
-    # Do things here!
+    connection = create_database_connection(config_values)
+    logger.info(
+        "Successfully connected to Oracle Database version : %s", connection.version
+    )
 
     elapsed_time = perf_counter() - start_time
     logger.info(

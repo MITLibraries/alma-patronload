@@ -1,7 +1,10 @@
+from unittest.mock import patch
+
 from patronload.cli import main
 
 
-def test_cli_no_options(caplog, runner):
+@patch("patronload.database.oracledb")
+def test_cli_no_options(mocked_oracledb, caplog, runner):  # pylint: disable=W0613
     result = runner.invoke(main)
     assert result.exit_code == 0
     assert "Logger 'root' configured with level=INFO" in caplog.text
@@ -10,7 +13,10 @@ def test_cli_no_options(caplog, runner):
     assert "Total time to complete process" in caplog.text
 
 
-def test_cli_log_configured_from_env(caplog, monkeypatch, runner):
+@patch("patronload.database.oracledb")
+def test_cli_log_configured_from_env(
+    mocked_oracledb, caplog, monkeypatch, runner  # pylint: disable=W0613
+):
     monkeypatch.setenv("LOG_LEVEL", "debug")
     result = runner.invoke(main)
     assert result.exit_code == 0
