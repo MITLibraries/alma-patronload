@@ -37,7 +37,8 @@
             </address>
         </addresses>
         <emails />
-        <phones />
+        <phones>
+        </phones>
     </contact_info>
     <pref_first_name />
     <pref_middle_name />

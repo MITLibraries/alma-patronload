@@ -81,7 +81,7 @@ def populate_staff_fields(
         patron_template: An XML template for a patron record
         patron_dict: A dict of patron record values.
     """
-    if patron_dict["FULL_NAME"]:
+    if patron_dict["FULL_NAME"] and "," in patron_dict["FULL_NAME"]:
         split_name = patron_dict["FULL_NAME"].split(",")
         patron_template.last_name.string = (  # type: ignore[union-attr]
             split_name[0].strip() or ""
@@ -97,14 +97,16 @@ def populate_staff_fields(
         patron_dict["LIBRARY_PERSON_TYPE"] or ""
     )
 
-    patron_template.line1.string = (  # type: ignore[union-attr]
+    patron_template.address.line1.string = (  # type: ignore[union-attr]
         patron_dict["OFFICE_ADDRESS"]
         if patron_dict["OFFICE_ADDRESS"]
         else "NO ADDRESS ON FILE IN DATA WAREHOUSE"
     )
     if patron_dict["OFFICE_PHONE"]:
-        patron_template.find_all("phone_number")[0].string = format_phone_number(
-            patron_dict["OFFICE_PHONE"],
+        patron_template.phone_number.string = (  # type: ignore[union-attr]
+            format_phone_number(
+                patron_dict["OFFICE_PHONE"],
+            )
         )
     else:
         patron_template.phones.clear()  # type: ignore[union-attr]
@@ -155,49 +157,45 @@ def populate_student_fields(
         if patron_dict["TERM_STREET1"]
         else "NO ADDRESS ON FILE IN DATA WAREHOUSE"
     )
-    patron_template.line3.string = (  # type: ignore[union-attr]
+    patron_template.address.line3.string = (  # type: ignore[union-attr]
         patron_dict["TERM_STREET2"] or ""
     )
-    patron_template.city.string = (  # type: ignore[union-attr]
+    patron_template.address.city.string = (  # type: ignore[union-attr]
         patron_dict["TERM_CITY"] or ""
     )
-    patron_template.state_province.string = (  # type: ignore[union-attr]
+    patron_template.address.state_province.string = (  # type: ignore[union-attr]
         patron_dict["TERM_STATE"] or ""
     )
-    patron_template.postal_code.string = (  # type: ignore[union-attr]
+    patron_template.address.postal_code.string = (  # type: ignore[union-attr]
         patron_dict["TERM_ZIP"] or ""
     )
 
-    office_phone_number = patron_template.find_all("phone_number")[0]
-    home_phone_number = patron_template.find_all("phone_number")[1]
-    if patron_dict["OFFICE_PHONE"] and patron_dict["TERM_PHONE1"]:
-        office_phone_number.string = format_phone_number(patron_dict["OFFICE_PHONE"])
-        home_phone_number.string = format_phone_number(patron_dict["TERM_PHONE1"])
-    elif (
+    preferred_phone_number = patron_template.find_all("phone_number")[0]
+    preferred_phone_number.string = format_phone_number(
         patron_dict["OFFICE_PHONE"]
         or patron_dict["TERM_PHONE1"]
         or patron_dict["TERM_PHONE2"]
-    ):
-        home_phone_number.parent.decompose()
-        office_phone_number.string = (
-            format_phone_number(patron_dict["OFFICE_PHONE"])
-            if patron_dict["OFFICE_PHONE"]
-            else (
-                format_phone_number(patron_dict["TERM_PHONE1"])
-                if patron_dict["TERM_PHONE1"]
-                else format_phone_number(patron_dict["TERM_PHONE2"])
-            )
+        or ""
+    )
+    if patron_dict["OFFICE_PHONE"]:
+        other_phone_number = patron_template.find_all("phone_number")[1]
+        other_phone_number.string = format_phone_number(
+            patron_dict["TERM_PHONE1"] or ""
         )
-    else:
-        patron_template.phones.clear()  # type: ignore[union-attr]
-
+    for phone in patron_template.find_all("phone"):
+        if not phone.phone_number.string:
+            phone.extract()
     if patron_dict["HOME_DEPARTMENT"] in STUDENT_DEPARTMENTS:
         patron_template.statistic_category.string = (  # type: ignore[union-attr]
             STUDENT_DEPARTMENTS[patron_dict["HOME_DEPARTMENT"]]
         )
     else:
         patron_template.statistic_category.string = "ZZ"  # type: ignore[union-attr]
-        logger.error("Unknown dept: %s", patron_dict["HOME_DEPARTMENT"])
+        logger.error(
+            "Unknown dept: '%s' in record with MIT ID # '%s'",
+            patron_dict["HOME_DEPARTMENT"],
+            patron_dict["MIT_ID"],
+        )
 
     # User Group codes
     # 31 = Student - Undergraduate
@@ -208,8 +206,10 @@ def populate_student_fields(
             patron_template.user_group.string = "31"  # type: ignore[union-attr]
         elif re.search("^[Gg]$", patron_dict["STUDENT_YEAR"]):
             patron_template.user_group.string = "32"  # type: ignore[union-attr]
-        if re.search("^NI[UVWTRH]$", patron_dict["HOME_DEPARTMENT"]):
-            patron_template.user_group.string = "54"  # type: ignore[union-attr]
+    if patron_dict["HOME_DEPARTMENT"] and re.search(
+        "^NI[UVWTRH]$", patron_dict["HOME_DEPARTMENT"]
+    ):
+        patron_template.user_group.string = "54"  # type: ignore[union-attr]
     return patron_template
 
 
