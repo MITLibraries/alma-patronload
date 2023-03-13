@@ -1,3 +1,4 @@
+import json
 import logging
 import os
 
@@ -39,6 +40,12 @@ STUDENT_FIELDS = [
     "STUDENT_YEAR",
     "HOME_DEPARTMENT",
 ]
+
+with open("config/staff_departments.txt", "r", encoding="utf8") as txt_file:
+    STAFF_DEPARTMENTS: dict[str, str] = json.load(txt_file)
+
+with open("config/student_departments.txt", "r", encoding="utf8") as txt_file:
+    STUDENT_DEPARTMENTS: dict[str, str] = json.load(txt_file)
 
 
 def configure_logger(logger: logging.Logger, log_level_string: str) -> str:

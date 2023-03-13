@@ -2,13 +2,13 @@
 <user>
     <record_type desc="Public">PUBLIC</record_type>
     <primary_id>STUDENT_KRB_NAME@MIT.EDU</primary_id>
-    <first_name />
-    <middle_name />
-    <last_name />
+    <first_name>Jane</first_name>
+    <middle_name>Janeth</middle_name>
+    <last_name>Doe</last_name>
     <user_title desc="" />
     <job_category desc="" />
     <job_description />
-    <user_group />
+    <user_group>32</user_group>
     <campus_code desc="" />
     <web_site_url />
     <cataloger_level desc="[00] Default Level">00</cataloger_level>
@@ -24,11 +24,11 @@
     <contact_info>
         <addresses>
             <address preferred="true" segment_type="External">
-                <line1 />
-                <line3 />
-                <city />
-                <state_province />
-                <postal_code />
+                <line1>100 Smith St</line1>
+                <line3>Apt 34</line3>
+                <city>Cambridge</city>
+                <state_province>MA</state_province>
+                <postal_code>00000</postal_code>
                 <country desc="" />
                 <address_note>User Address Type: Mailing address</address_note>
                 <address_types>
@@ -46,13 +46,13 @@
         </emails>
         <phones>
             <phone preferred="true" preferred_sms="false" segment_type="External">
-                <phone_number />
+                <phone_number>333-333-3333</phone_number>
                 <phone_types>
                     <phone_type desc="Office">office</phone_type>
                 </phone_types>
             </phone>
             <phone preferred="false" preferred_sms="false" segment_type="External">
-                <phone_number />
+                <phone_number>555-555-5555</phone_number>
                 <phone_types>
                     <phone_type desc="Home">home</phone_type>
                 </phone_types>
@@ -88,7 +88,7 @@
     <user_notes />
     <user_statistics>
         <user_statistic segment_type="External">
-            <statistic_category desc="" />
+            <statistic_category desc="">SN</statistic_category>
             <category_type desc="Department">DEPT</category_type>
         </user_statistic>
     </user_statistics>

@@ -2,14 +2,14 @@
 <user>
     <record_type desc="Public">PUBLIC</record_type>
     <primary_id>STAFF_KRB_NAME@MIT.EDU</primary_id>
-    <first_name />
+    <first_name>Jane</first_name>
     <middle_name />
-    <last_name />
+    <last_name>Doe</last_name>
     <user_title desc="" />
     <job_category desc="" />
     <job_description />
     <gender desc="" />
-    <user_group desc="" />
+    <user_group desc="Staff - Lincoln Labs">27</user_group>
     <campus_code desc="" />
     <web_site_url />
     <cataloger_level desc="[00] Default Level">00</cataloger_level>
@@ -25,7 +25,7 @@
     <contact_info>
         <addresses>
             <address preferred="true" segment_type="External">
-                <line1 />
+                <line1>AA-B1-11</line1>
                 <line3>MIT</line3>
                 <city />
                 <state_province />
@@ -47,7 +47,7 @@
         </emails>
         <phones>
             <phone preferred="true" preferred_sms="false" segment_type="External">
-                <phone_number />
+                <phone_number>555-555-5555</phone_number>
                 <phone_types>
                     <phone_type desc="Office">office</phone_type>
                 </phone_types>
@@ -83,7 +83,7 @@
     <user_notes />
     <user_statistics>
         <user_statistic segment_type="External">
-            <statistic_category desc="" />
+            <statistic_category desc="LL-Homeland Protection &amp; Air Traffic Con">NK</statistic_category>
             <category_type desc="Department">DEPT</category_type>
         </user_statistic>
     </user_statistics>
