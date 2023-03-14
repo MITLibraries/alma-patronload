@@ -2,7 +2,7 @@ import logging
 import re
 from copy import deepcopy
 from datetime import date
-from typing import Any, Generator
+from typing import Any
 
 from bs4 import BeautifulSoup
 from dateutil.relativedelta import relativedelta
@@ -220,9 +220,9 @@ def populate_student_fields(
 
 def patron_xml_from_records(
     patron_type: str, patron_records: list[tuple]
-) -> Generator[BeautifulSoup, None, None]:
+) -> BeautifulSoup:
     """
-    Create patron XML records from patron records.
+    Create patron XML data from patron records.
 
     Args:
         patron_type: The type of patron record being processed, staff or student.
@@ -231,6 +231,7 @@ def patron_xml_from_records(
     with open(
         f"config/{patron_type}_template.xml", "r", encoding="utf8"
     ) as xml_template:
+        patron_xml_data = BeautifulSoup("<userRecords></userRecords>", features="xml")
         patron_template = BeautifulSoup(xml_template, features="xml")
         six_months = (date.today() + relativedelta(months=+6)).strftime(
             "%Y-%m-%d"
@@ -254,10 +255,13 @@ def patron_xml_from_records(
                     six_months,
                     two_years,
                 )
-                yield patron_xml
+                patron_xml_data.userRecords.append(  # type: ignore[union-attr]
+                    patron_xml
+                )
             else:
                 logger.error(
                     "Rejected record: MIT ID # '%s', missing field KRB_NAME_UPPERCASE",
                     patron_record[0],
                 )
                 continue
+    return patron_xml_data

@@ -51,8 +51,8 @@ def test_load_config_values_success():
             '{"USER": "user123",  "PASSWORD": "pass123", "HOST": "http://localhost", '
             '"PORT": "1234", "PATH": "database5678"}'
         ),
-        "S3_BUCKET_NAME": "patronload",
-        "S3_PATH": "/test/example/",
+        "S3_BUCKET_NAME": "test-bucket",
+        "S3_PATH": "patronload",
         "WORKSPACE": "test",
     }
 

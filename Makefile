@@ -65,7 +65,7 @@ publish-dev: dist-dev ## Build, tag and push (intended for developer-based manua
 	docker push $(ECR_URL_DEV):`git describe --always`
 
 run-dev: ## Run task in dev
-	aws ecs run-task --cluster alma-integrations-patronload-ecs-dev --task-definition alma-integrations-patronload-ecs-dev:4 --launch-type="FARGATE" --network-configuration '{ "awsvpcConfiguration": {"subnets": ["subnet-0488e4996ddc8365b", "subnet-022e9ea19f5f93e65"],"securityGroups": ["sg-0d208a2e36edcc12f"],"assignPublicIp": "DISABLED"}}'
+	aws ecs run-task --cluster alma-integrations-patronload-ecs-dev --task-definition alma-integrations-patronload-ecs-dev:5 --launch-type="FARGATE" --network-configuration '{ "awsvpcConfiguration": {"subnets": ["subnet-0488e4996ddc8365b", "subnet-022e9ea19f5f93e65"],"securityGroups": ["sg-0d208a2e36edcc12f"],"assignPublicIp": "DISABLED"}}'
 
 
 ### Terraform-generated manual shortcuts for deploying to Stage. This requires  ###
@@ -85,4 +85,4 @@ publish-stage: ## Only use in an emergency
 	docker push $(ECR_URL_STAGE):`git describe --always`
 
 run-stage:
-	aws ecs run-task --cluster alma-integrations-patronload-ecs-stage --task-definition alma-integrations-patronload-ecs-stage:3 --launch-type="FARGATE" --network-configuration '{ "awsvpcConfiguration": {"subnets": ["subnet-05df31ac28dd1a4b0", "subnet-04cfa272d4f41dc8a"],"securityGroups": ["sg-08d197ec4530ff6b7"],"assignPublicIp": "DISABLED"}}'
+	aws ecs run-task --cluster alma-integrations-patronload-ecs-stage --task-definition alma-integrations-patronload-ecs-stage:7 --launch-type="FARGATE" --network-configuration '{ "awsvpcConfiguration": {"subnets": ["subnet-05df31ac28dd1a4b0", "subnet-04cfa272d4f41dc8a"],"securityGroups": ["sg-08d197ec4530ff6b7"],"assignPublicIp": "DISABLED"}}'
