@@ -313,7 +313,7 @@ def test_populate_staff_fields_all_values_success(
 
 
 def test_populate_staff_fields_no_comma_in_full_name_success(
-    staff_patron_template, staff_patron_all_values_dict
+    caplog, staff_patron_template, staff_patron_all_values_dict
 ):
     staff_patron_all_values_dict["FULL_NAME"] = "Doe Jane"
     patron_xml_record = populate_staff_fields(
@@ -322,6 +322,10 @@ def test_populate_staff_fields_no_comma_in_full_name_success(
     )
     assert patron_xml_record.last_name.string is None
     assert patron_xml_record.first_name.string is None
+    assert (
+        "'Doe Jane' can't be split, first and last name fields left blank"
+        in caplog.text
+    )
 
 
 def test_populate_staff_fields_null_values_success(

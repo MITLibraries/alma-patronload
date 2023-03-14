@@ -89,6 +89,11 @@ def populate_staff_fields(
         patron_template.first_name.string = (  # type: ignore[union-attr]
             split_name[1].strip() or ""
         )
+    else:
+        logger.error(
+            "'%s' can't be split, first and last name fields left blank",
+            patron_dict["FULL_NAME"],
+        )
 
     patron_template.user_group.string = (  # type: ignore[union-attr]
         patron_dict["LIBRARY_PERSON_TYPE_CODE"] or ""
