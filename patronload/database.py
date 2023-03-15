@@ -1,11 +1,10 @@
 import json
 import os
-from typing import Sequence
 
 import oracledb
 
 
-def build_sql_query(fields: Sequence[str], table: Sequence[str]) -> str:
+def build_sql_query(fields: list[str], table: str) -> str:
     """
     Build a SQL query for an Oracle database from a list of fields and a table name.
 
@@ -14,7 +13,7 @@ def build_sql_query(fields: Sequence[str], table: Sequence[str]) -> str:
         table: The table to retrieve the fields from.
     """
     query = "SELECT " + ", ".join(fields)
-    query += " FROM " + str(table)
+    query += " FROM " + table
     return query
 
 

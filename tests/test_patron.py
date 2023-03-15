@@ -1,8 +1,9 @@
+from bs4 import BeautifulSoup
 from freezegun import freeze_time
 
 from patronload.patron import (
     format_phone_number,
-    patron_xml_from_records,
+    patron_xml_string_from_records,
     populate_common_fields,
     populate_staff_fields,
     populate_student_fields,
@@ -20,15 +21,15 @@ def test_format_phone_number_invalid_value_is_returned():
     assert format_phone_number("abcd") == "abcd"
 
 
-@freeze_time("2023-03-01")
-def test_patron_xml_from_records_staff_success(
+@freeze_time("2023-03-01 12:00:00")
+def test_patron_xml_string_from_records_staff_success(
     caplog,
     staff_database_record_with_null_values,
     staff_database_record_with_all_values,
     staff_database_record_krb_and_null_values,
     staff_patrons_xml,
 ):
-    results = patron_xml_from_records(
+    results = patron_xml_string_from_records(
         "staff",
         [
             staff_database_record_with_null_values,
@@ -36,21 +37,24 @@ def test_patron_xml_from_records_staff_success(
             staff_database_record_krb_and_null_values,
         ],
     )
-    assert results.prettify() == staff_patrons_xml.prettify()
+    assert (
+        BeautifulSoup(results, features="xml").prettify()
+        == staff_patrons_xml.prettify()
+    )
     assert (
         "Rejected record: MIT ID # '222222222', missing field KRB_NAME_UPPERCASE"
     ) in caplog.text
 
 
-@freeze_time("2023-03-01")
-def test_patron_xml_from_records_student_success(
+@freeze_time("2023-03-01 12:00:00")
+def test_patron_xml_string_from_records_student_success(
     caplog,
     student_database_record_with_null_values,
     student_database_record_with_all_values,
     student_database_record_krb_and_null_values,
     student_patrons_xml,
 ):
-    results = patron_xml_from_records(
+    results = patron_xml_string_from_records(
         "student",
         [
             student_database_record_with_null_values,
@@ -58,7 +62,10 @@ def test_patron_xml_from_records_student_success(
             student_database_record_krb_and_null_values,
         ],
     )
-    assert results.prettify() == student_patrons_xml.prettify()
+    assert (
+        BeautifulSoup(results, features="xml").prettify()
+        == student_patrons_xml.prettify()
+    )
     assert (
         "Rejected record: MIT ID # '111111111', missing field KRB_NAME_UPPERCASE"
         in caplog.text

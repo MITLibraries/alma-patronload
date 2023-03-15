@@ -1,6 +1,6 @@
 import logging
 import os
-from datetime import date, timedelta
+from datetime import datetime, timedelta
 from io import BytesIO
 from time import perf_counter
 from zipfile import ZipFile
@@ -20,7 +20,7 @@ from patronload.database import (
     create_database_connection,
     query_database,
 )
-from patronload.patron import patron_xml_from_records
+from patronload.patron import patron_xml_string_from_records
 
 logger = logging.getLogger(__name__)
 
@@ -48,15 +48,17 @@ def main() -> None:
         "staff": {"fields": STAFF_FIELDS, "table": "LIBRARY_EMPLOYEE"},
         "student": {"fields": STUDENT_FIELDS, "table": "LIBRARY_STUDENT"},
     }.items():
-        query = build_sql_query(query_params["fields"], query_params["table"])
+        query = build_sql_query(
+            list(query_params["fields"]), str(query_params["table"])
+        )
         patron_records = query_database(connection, query)
         logger.info(
             "'%s' patron records retrieved from Data Warehouse", len(patron_records)
         )
         s3_client = client("s3")
-        file_name = f"{patron_type}_{date.today()}"
+        file_name = f"{patron_type}_{datetime.now().strftime('%Y-%m-%d_%H:%M:%S')}"
         zip_file_object = BytesIO()
-        patron_xml = str(patron_xml_from_records(patron_type, patron_records))
+        patron_xml = patron_xml_string_from_records(patron_type, patron_records)
         logger.info("XML data created for %s patrons ", patron_type)
         with ZipFile(zip_file_object, "a") as zip_file:
             zip_file.writestr(

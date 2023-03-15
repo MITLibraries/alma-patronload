@@ -90,7 +90,7 @@ def populate_staff_fields(
             split_name[1].strip() or ""
         )
     else:
-        logger.error(
+        logger.debug(
             "'%s' can't be split, first and last name fields left blank",
             patron_dict["FULL_NAME"],
         )
@@ -122,7 +122,7 @@ def populate_staff_fields(
         )
     else:
         patron_template.statistic_category.string = "ZQ"  # type: ignore[union-attr]
-        logger.error(
+        logger.debug(
             "Unknown dept: '%s' in record with MIT ID # '%s'",
             patron_dict["ORG_UNIT_ID"],
             patron_dict["MIT_ID"],
@@ -196,7 +196,7 @@ def populate_student_fields(
         )
     else:
         patron_template.statistic_category.string = "ZZ"  # type: ignore[union-attr]
-        logger.error(
+        logger.debug(
             "Unknown dept: '%s' in record with MIT ID # '%s'",
             patron_dict["HOME_DEPARTMENT"],
             patron_dict["MIT_ID"],
@@ -218,20 +218,21 @@ def populate_student_fields(
     return patron_template
 
 
-def patron_xml_from_records(
+def patron_xml_string_from_records(
     patron_type: str, patron_records: list[tuple]
-) -> BeautifulSoup:
+) -> str:
     """
-    Create patron XML data from patron records.
+    Create patrons XML string from patron records.
 
     Args:
         patron_type: The type of patron record being processed, staff or student.
         patron_records: A list of patron record tuples.
     """
+    patrons_xml_string = '<?xml version="1.0" encoding="utf-8"?><userRecords>'
+
     with open(
         f"config/{patron_type}_template.xml", "r", encoding="utf8"
     ) as xml_template:
-        patron_xml_data = BeautifulSoup("<userRecords></userRecords>", features="xml")
         patron_template = BeautifulSoup(xml_template, features="xml")
         six_months = (date.today() + relativedelta(months=+6)).strftime(
             "%Y-%m-%d"
@@ -255,13 +256,12 @@ def patron_xml_from_records(
                     six_months,
                     two_years,
                 )
-                patron_xml_data.userRecords.append(  # type: ignore[union-attr]
-                    patron_xml
-                )
+                patrons_xml_string += str(patron_xml.decode_contents())
             else:
-                logger.error(
+                logger.debug(
                     "Rejected record: MIT ID # '%s', missing field KRB_NAME_UPPERCASE",
                     patron_record[0],
                 )
                 continue
-    return patron_xml_data
+    patrons_xml_string += "</userRecords>"
+    return patrons_xml_string

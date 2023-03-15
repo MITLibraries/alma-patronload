@@ -28,6 +28,15 @@ From the project folder:
    
 2. Run `pipenv run patronload`
 
+# Running AWS ECS Task
+To properly test with a connection to the Data Warehouse, the app must be run as an ECS task in the `stage` environment.
+
+1. Export stage credentials and set `ECR_NAME_STAGE` and `ECR_URL_STAGE` env variables for `alma-patronload-stage`.
+2. To build and publish the container to stage, run `make dist-stage` and `make publish-stage`.
+3. From Terraform Cloud, select the `workloads-patronload-stage` workspace and copy the `aws_cli_run_task` command.
+4. Run the command in your terminal and observe the results in AWS.
+
+
 ## Required ENV
 
 - `DATA_WAREHOUSE_USER` = The user for the Data Warehouse database.
