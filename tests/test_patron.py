@@ -3,7 +3,7 @@ from freezegun import freeze_time
 
 from patronload.patron import (
     format_phone_number,
-    patron_xml_string_from_records,
+    patrons_xml_string_from_records,
     populate_common_fields,
     populate_staff_fields,
     populate_student_fields,
@@ -22,20 +22,22 @@ def test_format_phone_number_invalid_value_is_returned():
 
 
 @freeze_time("2023-03-01 12:00:00")
-def test_patron_xml_string_from_records_staff_success(
+def test_patrons_xml_string_from_records_staff_success(
     caplog,
     staff_database_record_with_null_values,
     staff_database_record_with_all_values,
     staff_database_record_krb_and_null_values,
     staff_patrons_xml,
 ):
-    results = patron_xml_string_from_records(
+    results = patrons_xml_string_from_records(
         "staff",
         [
             staff_database_record_with_null_values,
             staff_database_record_with_all_values,
             staff_database_record_krb_and_null_values,
+            staff_database_record_with_all_values,
         ],
+        [],
     )
     assert (
         BeautifulSoup(results, features="xml").prettify()
@@ -44,23 +46,28 @@ def test_patron_xml_string_from_records_staff_success(
     assert (
         "Rejected record: MIT ID # '222222222', missing field KRB_NAME_UPPERCASE"
     ) in caplog.text
+    assert (
+        "Patron record has already been created for MIT ID # '444444444'"
+    ) in caplog.text
 
 
 @freeze_time("2023-03-01 12:00:00")
-def test_patron_xml_string_from_records_student_success(
+def test_patrons_xml_string_from_records_student_success(
     caplog,
     student_database_record_with_null_values,
     student_database_record_with_all_values,
     student_database_record_krb_and_null_values,
     student_patrons_xml,
 ):
-    results = patron_xml_string_from_records(
+    results = patrons_xml_string_from_records(
         "student",
         [
             student_database_record_with_null_values,
             student_database_record_with_all_values,
             student_database_record_krb_and_null_values,
+            student_database_record_with_all_values,
         ],
+        [],
     )
     assert (
         BeautifulSoup(results, features="xml").prettify()
@@ -70,6 +77,9 @@ def test_patron_xml_string_from_records_student_success(
         "Rejected record: MIT ID # '111111111', missing field KRB_NAME_UPPERCASE"
         in caplog.text
     )
+    assert (
+        "Patron record has already been created for MIT ID # '333333333'"
+    ) in caplog.text
 
 
 def test_populate_common_fields_staff_all_values_success(

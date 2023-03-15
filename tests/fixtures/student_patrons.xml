@@ -1,4 +1,6 @@
-<?xml version="1.0" encoding="utf-8"?><userRecords><user>
+<?xml version="1.0" encoding="utf-8"?>
+<userRecords>
+    <user>
         <record_type desc="Public">PUBLIC</record_type>
         <primary_id>STUDENT_KRB_NAME@MIT.EDU</primary_id>
         <first_name>Jane</first_name>
@@ -95,7 +97,7 @@
     </user>
     <user>
         <record_type desc="Public">PUBLIC</record_type>
-        <primary_id>STUDENT_KRB_NAME@MIT.EDU</primary_id>
+        <primary_id>2STUDENT_KRB_NAME@MIT.EDU</primary_id>
         <first_name></first_name>
         <middle_name></middle_name>
         <last_name></last_name>
@@ -166,4 +168,5 @@
             </user_statistic>
         </user_statistics>
         <proxy_for_users />
-    </user></userRecords>
+    </user>
+</userRecords>

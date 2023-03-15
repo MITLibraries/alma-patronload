@@ -36,6 +36,16 @@ def mocked_s3(credentials):  # pylint: disable=W0613
     with mock_s3():
         s3_instance = boto3.client("s3", region_name="us-east-1")
         s3_instance.create_bucket(Bucket="test-bucket")
+        s3_instance.put_object(
+            Body="",
+            Bucket="test-bucket",
+            Key="patronload/1.zip",
+        )
+        s3_instance.put_object(
+            Body="",
+            Bucket="test-bucket",
+            Key="2.zip",
+        )
         yield s3_instance
 
 
@@ -69,7 +79,7 @@ def staff_database_record_krb_and_null_values():
     return (
         "666666666",
         None,
-        "STAFF_KRB_NAME",
+        "2STAFF_KRB_NAME",
         None,
         None,
         None,
@@ -152,7 +162,7 @@ def student_database_record_krb_and_null_values():
     return (
         "555555555",
         None,
-        "STUDENT_KRB_NAME",
+        "2STUDENT_KRB_NAME",
         None,
         None,
         None,

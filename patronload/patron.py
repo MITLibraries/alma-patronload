@@ -218,8 +218,8 @@ def populate_student_fields(
     return patron_template
 
 
-def patron_xml_string_from_records(
-    patron_type: str, patron_records: list[tuple]
+def patrons_xml_string_from_records(
+    patron_type: str, patron_records: list[tuple], existing_ids: list[str]
 ) -> str:
     """
     Create patrons XML string from patron records.
@@ -227,6 +227,9 @@ def patron_xml_string_from_records(
     Args:
         patron_type: The type of patron record being processed, staff or student.
         patron_records: A list of patron record tuples.
+        existing_ids: A list of IDs that have already been processed. Used to ensure
+        that duplicate profiles are not created, such as when students have already been
+        added as staff.
     """
     patrons_xml_string = '<?xml version="1.0" encoding="utf-8"?><userRecords>'
 
@@ -243,20 +246,29 @@ def patron_xml_string_from_records(
 
         for patron_record in patron_records:
             if patron_record[2]:  # Check for KRB_NAME_UPPERCASE field
-                template = deepcopy(patron_template)
-                if patron_type == "staff":
-                    patron_dict = dict(zip(STAFF_FIELDS, patron_record))
-                    updated_template = populate_staff_fields(template, patron_dict)
-                elif patron_type == "student":
-                    patron_dict = dict(zip(STUDENT_FIELDS, patron_record))
-                    updated_template = populate_student_fields(template, patron_dict)
-                patron_xml = populate_common_fields(
-                    updated_template,
-                    patron_dict,
-                    six_months,
-                    two_years,
-                )
-                patrons_xml_string += str(patron_xml.decode_contents())
+                if patron_record[2] not in existing_ids:
+                    existing_ids.append(patron_record[2])
+                    template = deepcopy(patron_template)
+                    if patron_type == "staff":
+                        patron_dict = dict(zip(STAFF_FIELDS, patron_record))
+                        updated_template = populate_staff_fields(template, patron_dict)
+                    elif patron_type == "student":
+                        patron_dict = dict(zip(STUDENT_FIELDS, patron_record))
+                        updated_template = populate_student_fields(
+                            template, patron_dict
+                        )
+                    patron_xml = populate_common_fields(
+                        updated_template,
+                        patron_dict,
+                        six_months,
+                        two_years,
+                    )
+                    patrons_xml_string += str(patron_xml.decode_contents())
+                else:
+                    logger.debug(
+                        "Patron record has already been created for MIT ID # '%s'",
+                        patron_record[0],
+                    )
             else:
                 logger.debug(
                     "Rejected record: MIT ID # '%s', missing field KRB_NAME_UPPERCASE",

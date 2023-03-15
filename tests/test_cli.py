@@ -12,7 +12,7 @@ from patronload.cli import main
 def test_cli_no_options(
     mocked_oracledb, caplog, mocked_s3, runner, s3_client  # pylint: disable=W0613
 ):
-    assert "Contents" not in mocked_s3.list_objects(Bucket="test-bucket")
+    assert len(mocked_s3.list_objects(Bucket="test-bucket")["Contents"]) == 2
     result = runner.invoke(main)
     assert result.exit_code == 0
     assert "Logger 'root' configured with level=INFO" in caplog.text
@@ -26,9 +26,17 @@ def test_cli_no_options(
         "'student_2023-03-01_12:00:00.zip' uploaded to S3 bucket 'test-bucket'"
         in caplog.text
     )
-    s3_bucket_contents = mocked_s3.list_objects(Bucket="test-bucket")["Contents"]
-    assert s3_bucket_contents[0]["Key"] == "patronload/staff_2023-03-01_12:00:00.zip"
-    assert s3_bucket_contents[1]["Key"] == "patronload/student_2023-03-01_12:00:00.zip"
+    assert len(mocked_s3.list_objects(Bucket="test-bucket")["Contents"]) == 3
+    s3_bucket_path_contents = mocked_s3.list_objects(
+        Bucket="test-bucket", Prefix="patronload"
+    )["Contents"]
+    assert (
+        s3_bucket_path_contents[0]["Key"] == "patronload/staff_2023-03-01_12:00:00.zip"
+    )
+    assert (
+        s3_bucket_path_contents[1]["Key"]
+        == "patronload/student_2023-03-01_12:00:00.zip"
+    )
     for file_name in ["staff_2023-03-01_12:00:00", "student_2023-03-01_12:00:00"]:
         zip_file = s3_client.get_object(
             Bucket="test-bucket",
@@ -50,7 +58,7 @@ def test_cli_log_configured_from_env(  # pylint: disable=R0913
     s3_client,
 ):
     monkeypatch.setenv("LOG_LEVEL", "debug")
-    assert "Contents" not in mocked_s3.list_objects(Bucket="test-bucket")
+    assert len(mocked_s3.list_objects(Bucket="test-bucket")["Contents"]) == 2
     result = runner.invoke(main)
     assert result.exit_code == 0
     assert "Logger 'root' configured with level=DEBUG" in caplog.text
@@ -64,9 +72,17 @@ def test_cli_log_configured_from_env(  # pylint: disable=R0913
         "'student_2023-03-01_12:00:00.zip' uploaded to S3 bucket 'test-bucket'"
         in caplog.text
     )
-    s3_bucket_contents = mocked_s3.list_objects(Bucket="test-bucket")["Contents"]
-    assert s3_bucket_contents[0]["Key"] == "patronload/staff_2023-03-01_12:00:00.zip"
-    assert s3_bucket_contents[1]["Key"] == "patronload/student_2023-03-01_12:00:00.zip"
+    assert len(mocked_s3.list_objects(Bucket="test-bucket")["Contents"]) == 3
+    s3_bucket_path_contents = mocked_s3.list_objects(
+        Bucket="test-bucket", Prefix="patronload"
+    )["Contents"]
+    assert (
+        s3_bucket_path_contents[0]["Key"] == "patronload/staff_2023-03-01_12:00:00.zip"
+    )
+    assert (
+        s3_bucket_path_contents[1]["Key"]
+        == "patronload/student_2023-03-01_12:00:00.zip"
+    )
     for file_name in ["staff_2023-03-01_12:00:00", "student_2023-03-01_12:00:00"]:
         zip_file = s3_client.get_object(
             Bucket="test-bucket",

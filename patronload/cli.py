@@ -20,7 +20,7 @@ from patronload.database import (
     create_database_connection,
     query_database,
 )
-from patronload.patron import patron_xml_string_from_records
+from patronload.patron import patrons_xml_string_from_records
 
 logger = logging.getLogger(__name__)
 
@@ -44,6 +44,19 @@ def main() -> None:
         "Successfully connected to Oracle Database version : %s", connection.version
     )
 
+    s3_client = client("s3")
+    for zip_file_key in [
+        s3_object["Key"]
+        for s3_object in s3_client.list_objects(
+            Bucket=config_values["S3_BUCKET_NAME"], Prefix=config_values["S3_PATH"]
+        )["Contents"]
+        if s3_object["Key"].endswith(".zip")
+    ]:
+        s3_client.delete_object(
+            Bucket=config_values["S3_BUCKET_NAME"], Key=zip_file_key
+        )
+
+    existing_ids: list[str] = []
     for patron_type, query_params in {
         "staff": {"fields": STAFF_FIELDS, "table": "LIBRARY_EMPLOYEE"},
         "student": {"fields": STUDENT_FIELDS, "table": "LIBRARY_STUDENT"},
@@ -55,16 +68,17 @@ def main() -> None:
         logger.info(
             "'%s' patron records retrieved from Data Warehouse", len(patron_records)
         )
-        s3_client = client("s3")
+
         file_name = f"{patron_type}_{datetime.now().strftime('%Y-%m-%d_%H:%M:%S')}"
         zip_file_object = BytesIO()
-        patron_xml = patron_xml_string_from_records(patron_type, patron_records)
-        logger.info("XML data created for %s patrons ", patron_type)
         with ZipFile(zip_file_object, "a") as zip_file:
             zip_file.writestr(
                 f"{file_name}.xml",
-                patron_xml,
+                patrons_xml_string_from_records(
+                    patron_type, patron_records, existing_ids
+                ),
             )
+        logger.info("XML data created and zipped for %s patrons ", patron_type)
         s3_client.put_object(
             Body=zip_file_object.getvalue(),
             Bucket=config_values["S3_BUCKET_NAME"],
