@@ -1,4 +1,3 @@
-import json
 import os
 
 import oracledb
@@ -25,14 +24,13 @@ def create_database_connection(config_values: dict[str, str]) -> oracledb.Connec
         config_values: A dict with the necessary values to configure an
         Oracle database connection.
     """
-    cloud_connector = json.loads(config_values["DATAWAREHOUSE_CLOUDCONNECTOR_JSON"])
     oracledb.init_oracle_client(lib_dir=os.getenv("ORACLE_LIB_DIR"))
     connection_parameters = oracledb.ConnectParams(
-        user=cloud_connector["USER"],
-        password=cloud_connector["PASSWORD"],
-        host=cloud_connector["HOST"],
-        port=cloud_connector["PORT"],
-        sid=cloud_connector["PATH"],
+        user=config_values["USER"],
+        password=config_values["PASSWORD"],
+        host=config_values["HOST"],
+        port=config_values["PORT"],
+        sid=config_values["PATH"],
     )
     return oracledb.connect(params=connection_parameters)
 

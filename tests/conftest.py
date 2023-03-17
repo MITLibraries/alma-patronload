@@ -19,10 +19,11 @@ def aws_credentials():
 @pytest.fixture(name="config_values")
 def config_values_fixture():
     config_values = {
-        "DATAWAREHOUSE_CLOUDCONNECTOR_JSON": (
-            '{"USER": "user123",  "PASSWORD": "pass123", "HOST": "http://localhost", '
-            '"PORT": "1234", "PATH": "database5678"}'
-        ),
+        "USER": "user123",
+        "PASSWORD": "pass123",
+        "HOST": "http://localhost",
+        "PORT": "1234",
+        "PATH": "database5678",
         "LOG_LEVEL": "INFO",
         "S3_BUCKET_NAME": "test-bucket",
         "S3_PATH": "patronload",
@@ -258,6 +259,15 @@ def runner():
 
 
 @pytest.fixture(autouse=True)
-def test_env(config_values):
-    os.environ = config_values
+def test_env():
+    os.environ = {
+        "DATAWAREHOUSE_CLOUDCONNECTOR_JSON": (
+            '{"USER": "user123",  "PASSWORD": "pass123", "HOST": "http://localhost", '
+            '"PORT": "1234", "PATH": "database5678"}'
+        ),
+        "LOG_LEVEL": "INFO",
+        "S3_BUCKET_NAME": "test-bucket",
+        "S3_PATH": "patronload",
+        "WORKSPACE": "test",
+    }
     yield
