@@ -1,7 +1,11 @@
+from io import BytesIO
+from zipfile import ZipFile
+
 from bs4 import BeautifulSoup
 from freezegun import freeze_time
 
 from patronload.patron import (
+    create_and_write_to_zip_file_in_memory,
     format_phone_number,
     patrons_xml_string_from_records,
     populate_common_fields,
@@ -13,7 +17,13 @@ SIX_MONTHS = "2023-09-01Z"
 TWO_YEARS = "2025-09-01Z"
 
 
-def test_format_phone_number_valid_value_succeeds():
+def test_create_and_write_to_zip_file_in_memory_success():
+    zip_file_object = create_and_write_to_zip_file_in_memory("test", "<xml></xml>")
+    with ZipFile(BytesIO(zip_file_object.getvalue()), "r") as zip_file:
+        assert zip_file.namelist() == ["test.xml"]
+
+
+def test_format_phone_number_valid_value_success():
     assert format_phone_number("1111111111") == "111-111-1111"
 
 

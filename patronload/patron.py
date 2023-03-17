@@ -2,7 +2,9 @@ import logging
 import re
 from copy import deepcopy
 from datetime import date
+from io import BytesIO
 from typing import Any
+from zipfile import ZipFile
 
 from bs4 import BeautifulSoup
 from dateutil.relativedelta import relativedelta
@@ -15,6 +17,27 @@ from patronload.config import (
 )
 
 logger = logging.getLogger(__name__)
+
+
+def create_and_write_to_zip_file_in_memory(
+    file_name: str, file_content: str
+) -> BytesIO:
+    """
+    Create zip file in memory and zip a string value.
+
+    Used to zip patron XML data before uploading to S3 bucket.
+
+    Args:
+        file_name: The name of the file to be zipped.
+        file_content: The file content to be zipped, must be a str.
+    """
+    zip_file_object = BytesIO()
+    with ZipFile(zip_file_object, "a") as zip_file:
+        zip_file.writestr(
+            f"{file_name}.xml",
+            file_content,
+        )
+        return zip_file_object
 
 
 def format_phone_number(phone_number: str) -> str:
@@ -263,7 +286,7 @@ def patrons_xml_string_from_records(
                         six_months,
                         two_years,
                     )
-                    patrons_xml_string += str(patron_xml.decode_contents())
+                    patrons_xml_string += patron_xml.decode_contents()
                 else:
                     logger.debug(
                         "Patron record has already been created for MIT ID # '%s'",
@@ -274,6 +297,5 @@ def patrons_xml_string_from_records(
                     "Rejected record: MIT ID # '%s', missing field KRB_NAME_UPPERCASE",
                     patron_record[0],
                 )
-                continue
     patrons_xml_string += "</userRecords>"
     return patrons_xml_string

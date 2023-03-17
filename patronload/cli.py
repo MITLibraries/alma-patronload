@@ -1,9 +1,7 @@
 import logging
 import os
 from datetime import datetime, timedelta
-from io import BytesIO
 from time import perf_counter
-from zipfile import ZipFile
 
 import click
 from boto3 import client
@@ -20,7 +18,11 @@ from patronload.database import (
     create_database_connection,
     query_database,
 )
-from patronload.patron import patrons_xml_string_from_records
+from patronload.patron import (
+    create_and_write_to_zip_file_in_memory,
+    patrons_xml_string_from_records,
+)
+from patronload.s3 import delete_objects_from_bucket_with_prefix
 
 logger = logging.getLogger(__name__)
 
@@ -45,17 +47,9 @@ def main() -> None:
     )
 
     s3_client = client("s3")
-    for zip_file_key in [
-        s3_object["Key"]
-        for s3_object in s3_client.list_objects(
-            Bucket=config_values["S3_BUCKET_NAME"], Prefix=config_values["S3_PATH"]
-        )["Contents"]
-        if s3_object["Key"].endswith(".zip")
-    ]:
-        s3_client.delete_object(
-            Bucket=config_values["S3_BUCKET_NAME"], Key=zip_file_key
-        )
-
+    delete_objects_from_bucket_with_prefix(
+        s3_client, ".zip", config_values["S3_BUCKET_NAME"], config_values["S3_PATH"]
+    )
     existing_ids: list[str] = []
     for patron_type, query_params in {
         "staff": {"fields": STAFF_FIELDS, "table": "LIBRARY_EMPLOYEE"},
@@ -69,15 +63,11 @@ def main() -> None:
             "'%s' patron records retrieved from Data Warehouse", len(patron_records)
         )
 
-        file_name = f"{patron_type}_{datetime.now().strftime('%Y-%m-%d_%H:%M:%S')}"
-        zip_file_object = BytesIO()
-        with ZipFile(zip_file_object, "a") as zip_file:
-            zip_file.writestr(
-                f"{file_name}.xml",
-                patrons_xml_string_from_records(
-                    patron_type, patron_records, existing_ids
-                ),
-            )
+        file_name = f"{patron_type}_{datetime.now().strftime('%Y-%m-%d_%H.%M.%S')}"
+        zip_file_object = create_and_write_to_zip_file_in_memory(
+            file_name,
+            patrons_xml_string_from_records(patron_type, patron_records, existing_ids),
+        )
         logger.info("XML data created and zipped for %s patrons ", patron_type)
         s3_client.put_object(
             Body=zip_file_object.getvalue(),
