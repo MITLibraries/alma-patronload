@@ -18,7 +18,7 @@ TWO_YEARS = "2025-09-01Z"
 
 
 def test_create_and_write_to_zip_file_in_memory_success():
-    zip_file_object = create_and_write_to_zip_file_in_memory("test", "<xml></xml>")
+    zip_file_object = create_and_write_to_zip_file_in_memory("test.xml", "<xml></xml>")
     with ZipFile(BytesIO(zip_file_object.getvalue()), "r") as zip_file:
         assert zip_file.namelist() == ["test.xml"]
 

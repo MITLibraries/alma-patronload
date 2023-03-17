@@ -22,7 +22,7 @@ from patronload.patron import (
     create_and_write_to_zip_file_in_memory,
     patrons_xml_string_from_records,
 )
-from patronload.s3 import delete_objects_from_bucket_with_prefix
+from patronload.s3 import delete_zip_files_from_bucket_with_prefix
 
 logger = logging.getLogger(__name__)
 
@@ -47,8 +47,8 @@ def main() -> None:
     )
 
     s3_client = client("s3")
-    delete_objects_from_bucket_with_prefix(
-        s3_client, ".zip", config_values["S3_BUCKET_NAME"], config_values["S3_PATH"]
+    delete_zip_files_from_bucket_with_prefix(
+        s3_client, config_values["S3_BUCKET_NAME"], config_values["S3_PATH"]
     )
     existing_ids: list[str] = []
     for patron_type, query_params in {
@@ -60,12 +60,14 @@ def main() -> None:
         )
         patron_records = query_database(connection, query)
         logger.info(
-            "'%s' patron records retrieved from Data Warehouse", len(patron_records)
+            "%s %s patron records retrieved from Data Warehouse",
+            len(patron_records),
+            patron_type,
         )
 
         file_name = f"{patron_type}_{datetime.now().strftime('%Y-%m-%d_%H.%M.%S')}"
         zip_file_object = create_and_write_to_zip_file_in_memory(
-            file_name,
+            f"{file_name}.xml",
             patrons_xml_string_from_records(patron_type, patron_records, existing_ids),
         )
         logger.info("XML data created and zipped for %s patrons ", patron_type)

@@ -20,7 +20,7 @@ logger = logging.getLogger(__name__)
 
 
 def create_and_write_to_zip_file_in_memory(
-    file_name: str, file_content: str
+    xml_file_name: str, file_content: str
 ) -> BytesIO:
     """
     Create zip file in memory and zip a string value.
@@ -28,13 +28,13 @@ def create_and_write_to_zip_file_in_memory(
     Used to zip patron XML data before uploading to S3 bucket.
 
     Args:
-        file_name: The name of the file to be zipped.
+        xml_file_name: The name of the XML file to be zipped.
         file_content: The file content to be zipped, must be a str.
     """
     zip_file_object = BytesIO()
-    with ZipFile(zip_file_object, "a") as zip_file:
+    with ZipFile(zip_file_object, "w") as zip_file:
         zip_file.writestr(
-            f"{file_name}.xml",
+            xml_file_name,
             file_content,
         )
         return zip_file_object
