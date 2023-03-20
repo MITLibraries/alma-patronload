@@ -242,7 +242,7 @@ def populate_student_fields(
 
 
 def patrons_xml_string_from_records(
-    patron_type: str, patron_records: list[tuple], existing_ids: list[str]
+    patron_type: str, patron_records: list[tuple], existing_krb_names: list[str]
 ) -> str:
     """
     Create patrons XML string from patron records.
@@ -250,7 +250,7 @@ def patrons_xml_string_from_records(
     Args:
         patron_type: The type of patron record being processed, staff or student.
         patron_records: A list of patron record tuples.
-        existing_ids: A list of IDs that have already been processed. Used to ensure
+        existing_krb_names: A list of IDs that have already been processed. Used to ensure
         that duplicate profiles are not created, such as when students have already been
         added as staff.
     """
@@ -269,8 +269,8 @@ def patrons_xml_string_from_records(
 
         for patron_record in patron_records:
             if patron_record[2]:  # Check for KRB_NAME_UPPERCASE field
-                if patron_record[2] not in existing_ids:
-                    existing_ids.append(patron_record[2])
+                if patron_record[2] not in existing_krb_names:
+                    existing_krb_names.append(patron_record[2])
                     template = deepcopy(patron_template)
                     if patron_type == "staff":
                         patron_dict = dict(zip(STAFF_FIELDS, patron_record))

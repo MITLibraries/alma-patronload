@@ -22,13 +22,13 @@ def delete_zip_files_from_bucket_with_prefix(
         Bucket=s3_bucket_name, Prefix=s3_prefix
     )
     if "Contents" in s3_objects_with_prefix:
-        for file_to_delete_key in [
+        for object_to_delete_key in [
             s3_object["Key"]
             for s3_object in s3_objects_with_prefix["Contents"]
             if s3_object["Key"].endswith(".zip")
         ]:
-            s3_client.delete_object(Bucket=s3_bucket_name, Key=file_to_delete_key)
+            s3_client.delete_object(Bucket=s3_bucket_name, Key=object_to_delete_key)
             logger.debug(
                 "'%s' deleted before processing new patron zip files",
-                file_to_delete_key,
+                object_to_delete_key,
             )

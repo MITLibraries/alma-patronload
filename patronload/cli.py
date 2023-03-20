@@ -50,7 +50,7 @@ def main() -> None:
     delete_zip_files_from_bucket_with_prefix(
         s3_client, config_values["S3_BUCKET_NAME"], config_values["S3_PATH"]
     )
-    existing_ids: list[str] = []
+    existing_krb_names: list[str] = []
     for patron_type, query_params in {
         "staff": {"fields": STAFF_FIELDS, "table": "LIBRARY_EMPLOYEE"},
         "student": {"fields": STUDENT_FIELDS, "table": "LIBRARY_STUDENT"},
@@ -68,7 +68,9 @@ def main() -> None:
         file_name = f"{patron_type}_{datetime.now().strftime('%Y-%m-%d_%H.%M.%S')}"
         zip_file_object = create_and_write_to_zip_file_in_memory(
             f"{file_name}.xml",
-            patrons_xml_string_from_records(patron_type, patron_records, existing_ids),
+            patrons_xml_string_from_records(
+                patron_type, patron_records, existing_krb_names
+            ),
         )
         logger.info("XML data created and zipped for %s patrons ", patron_type)
         s3_client.put_object(
