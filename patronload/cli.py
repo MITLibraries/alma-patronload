@@ -52,7 +52,9 @@ def main() -> None:
     )
     existing_krb_names: list[str] = []
     for patron_type, query_params in {
-        # Staff records must always be listed first to ensure they are processed first.
+        # If both a staff and student record exist for a given patron, only a staff record
+        # should be created in Alma. Staff records must be processed first to ensure this
+        # will happen, so we list staff first in this `dict`.
         "staff": {"fields": STAFF_FIELDS, "table": "LIBRARY_EMPLOYEE"},
         "student": {"fields": STUDENT_FIELDS, "table": "LIBRARY_STUDENT"},
     }.items():
