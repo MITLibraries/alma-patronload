@@ -64,7 +64,6 @@ publish-dev: dist-dev ## Build, tag and push (intended for developer-based manua
 	docker push $(ECR_URL_DEV):latest
 	docker push $(ECR_URL_DEV):`git describe --always`
 
-
 ### Terraform-generated manual shortcuts for deploying to Stage. This requires  ###
 ###   that ECR_NAME_STAGE, ECR_URL_STAGE, and FUNCTION_STAGE environment        ###
 ###   variables are set locally by the developer and that the developer has     ###

@@ -10,6 +10,8 @@ oracledb = "*"
 bs4 = "*"
 lxml = "*"
 python-dateutil = "*"
+boto3 = "*"
+boto3-stubs = {extras = ["essential"], version = "*"}
 
 [dev-packages]
 bandit = "*"
@@ -22,6 +24,7 @@ pytest = "*"
 freezegun = "*"
 types-python-dateutil = "*"
 types-beautifulsoup4 = "*"
+moto = {extras = ["s3"], version = "*"}
 
 [requires]
 python_version = "3.11"

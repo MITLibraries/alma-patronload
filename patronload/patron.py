@@ -2,7 +2,9 @@ import logging
 import re
 from copy import deepcopy
 from datetime import date
-from typing import Any, Generator
+from io import BytesIO
+from typing import Any
+from zipfile import ZipFile
 
 from bs4 import BeautifulSoup
 from dateutil.relativedelta import relativedelta
@@ -15,6 +17,27 @@ from patronload.config import (
 )
 
 logger = logging.getLogger(__name__)
+
+
+def create_and_write_to_zip_file_in_memory(
+    xml_file_name: str, file_content: str
+) -> BytesIO:
+    """
+    Create zip file in memory and zip a string value.
+
+    Used to zip patron XML data before uploading to S3 bucket.
+
+    Args:
+        xml_file_name: The name of the XML file to be zipped.
+        file_content: The file content to be zipped, must be a str.
+    """
+    zip_file_object = BytesIO()
+    with ZipFile(zip_file_object, "w") as zip_file:
+        zip_file.writestr(
+            xml_file_name,
+            file_content,
+        )
+        return zip_file_object
 
 
 def format_phone_number(phone_number: str) -> str:
@@ -90,7 +113,7 @@ def populate_staff_fields(
             split_name[1].strip() or ""
         )
     else:
-        logger.error(
+        logger.debug(
             "'%s' can't be split, first and last name fields left blank",
             patron_dict["FULL_NAME"],
         )
@@ -122,7 +145,7 @@ def populate_staff_fields(
         )
     else:
         patron_template.statistic_category.string = "ZQ"  # type: ignore[union-attr]
-        logger.error(
+        logger.debug(
             "Unknown dept: '%s' in record with MIT ID # '%s'",
             patron_dict["ORG_UNIT_ID"],
             patron_dict["MIT_ID"],
@@ -196,7 +219,7 @@ def populate_student_fields(
         )
     else:
         patron_template.statistic_category.string = "ZZ"  # type: ignore[union-attr]
-        logger.error(
+        logger.debug(
             "Unknown dept: '%s' in record with MIT ID # '%s'",
             patron_dict["HOME_DEPARTMENT"],
             patron_dict["MIT_ID"],
@@ -218,16 +241,21 @@ def populate_student_fields(
     return patron_template
 
 
-def patron_xml_from_records(
-    patron_type: str, patron_records: list[tuple]
-) -> Generator[BeautifulSoup, None, None]:
+def patrons_xml_string_from_records(
+    patron_type: str, patron_records: list[tuple], existing_krb_names: list[str]
+) -> str:
     """
-    Create patron XML records from patron records.
+    Create patrons XML string from patron records.
 
     Args:
         patron_type: The type of patron record being processed, staff or student.
         patron_records: A list of patron record tuples.
+        existing_krb_names: A list of IDs that have already been processed. Used to ensure
+        that duplicate profiles are not created, such as when students have already been
+        added as staff.
     """
+    patrons_xml_string = '<?xml version="1.0" encoding="utf-8"?><userRecords>'
+
     with open(
         f"config/{patron_type}_template.xml", "r", encoding="utf8"
     ) as xml_template:
@@ -241,23 +269,33 @@ def patron_xml_from_records(
 
         for patron_record in patron_records:
             if patron_record[2]:  # Check for KRB_NAME_UPPERCASE field
-                template = deepcopy(patron_template)
-                if patron_type == "staff":
-                    patron_dict = dict(zip(STAFF_FIELDS, patron_record))
-                    updated_template = populate_staff_fields(template, patron_dict)
-                elif patron_type == "student":
-                    patron_dict = dict(zip(STUDENT_FIELDS, patron_record))
-                    updated_template = populate_student_fields(template, patron_dict)
-                patron_xml = populate_common_fields(
-                    updated_template,
-                    patron_dict,
-                    six_months,
-                    two_years,
-                )
-                yield patron_xml
+                if patron_record[2] not in existing_krb_names:
+                    existing_krb_names.append(patron_record[2])
+                    template = deepcopy(patron_template)
+                    if patron_type == "staff":
+                        patron_dict = dict(zip(STAFF_FIELDS, patron_record))
+                        updated_template = populate_staff_fields(template, patron_dict)
+                    elif patron_type == "student":
+                        patron_dict = dict(zip(STUDENT_FIELDS, patron_record))
+                        updated_template = populate_student_fields(
+                            template, patron_dict
+                        )
+                    patron_xml = populate_common_fields(
+                        updated_template,
+                        patron_dict,
+                        six_months,
+                        two_years,
+                    )
+                    patrons_xml_string += patron_xml.decode_contents()
+                else:
+                    logger.debug(
+                        "Patron record has already been created for MIT ID # '%s'",
+                        patron_record[0],
+                    )
             else:
-                logger.error(
+                logger.debug(
                     "Rejected record: MIT ID # '%s', missing field KRB_NAME_UPPERCASE",
                     patron_record[0],
                 )
-                continue
+    patrons_xml_string += "</userRecords>"
+    return patrons_xml_string

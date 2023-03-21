@@ -47,13 +47,13 @@ def test_configure_sentry_env_variable_is_dsn(monkeypatch):
 def test_load_config_values_success():
     config_values = load_config_values()
     assert config_values == {
-        "DATA_WAREHOUSE_USER": "user123",
-        "DATA_WAREHOUSE_PASSWORD": "pass123",
-        "DATA_WAREHOUSE_HOST": "http://localhost/",
-        "DATA_WAREHOUSE_PORT": "1234",
-        "DATA_WAREHOUSE_SID": "database5678",
-        "S3_BUCKET_NAME": "patronload",
-        "S3_PATH": "/test/example/",
+        "USER": "user123",
+        "PASSWORD": "pass123",
+        "HOST": "http://localhost",
+        "PORT": "1234",
+        "PATH": "database5678",
+        "S3_BUCKET_NAME": "test-bucket",
+        "S3_PREFIX": "patronload",
         "WORKSPACE": "test",
     }
 

@@ -26,11 +26,11 @@ def create_database_connection(config_values: dict[str, str]) -> oracledb.Connec
     """
     oracledb.init_oracle_client(lib_dir=os.getenv("ORACLE_LIB_DIR"))
     connection_parameters = oracledb.ConnectParams(
-        user=config_values["DATA_WAREHOUSE_USER"],
-        password=config_values["DATA_WAREHOUSE_PASSWORD"],
-        host=config_values["DATA_WAREHOUSE_HOST"],
-        port=config_values["DATA_WAREHOUSE_PORT"],
-        sid=config_values["DATA_WAREHOUSE_SID"],
+        user=config_values["USER"],
+        password=config_values["PASSWORD"],
+        host=config_values["HOST"],
+        port=config_values["PORT"],
+        sid=config_values["PATH"],
     )
     return oracledb.connect(params=connection_parameters)
 
