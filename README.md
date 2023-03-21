@@ -10,31 +10,32 @@ Creates Alma-compliant XML patron profiles from information extracted from the D
 - To lint the repo: `make lint`
 - To run the app: `pipenv run patronload --help`
 
-The Data Warehouse runs on a older version of Oracle that necessitates the `thick` mode of `python-oracledb` which requires the Oracle Instant Client Library (this app was developed with version 21.9.0.0.0.)
+The Data Warehouse runs on a older version of Oracle that necessitates the `thick` mode of `python-oracledb` which requires the Oracle Instant Client Library (this app was developed with version 21.9.0.0.0.).
 
 # With Docker
 Note: as of this writing, the Apple M1 Macs cannot run Oracle Instant Client, so Docker is the only option for development on those machines. 
 
 From the project folder:
 
-1. Run `make dependencies` with appropriate AWS credentials
+1. Run `make dependencies` with appropriate AWS credentials.
 
-2. Run `make dist-dev` to build the container
+2. Run `make dist-dev` to build the container.
 
-3. Run `docker run alma-patronload-dev:latest`
+3. Run `docker run alma-patronload-dev:latest`.
 
 # Without Docker
 1. Download [Oracle Instant Client](https://www.oracle.com/database/technologies/instant-client/downloads.html) (`basiclite` is sufficient) and set the `ORACLE_LIB_DIR` env variable.
    
-2. Run `pipenv run patronload`
+2. Run `pipenv run patronload`.
 
 # Running AWS ECS Task
 To properly test with a connection to the Data Warehouse, the app must be run as an ECS task in the `stage` environment.
 
 1. Export stage credentials and set `ECR_NAME_STAGE` and `ECR_URL_STAGE` env variables for `alma-patronload-stage`.
-2. To build and publish the container to stage, run `make dist-stage` and `make publish-stage`.
-3. From Terraform Cloud, select the `workloads-patronload-stage` workspace and copy the `aws_cli_run_task` command.
-4. Run the command in your terminal and observe the results in AWS.
+2. Run `make dependencies` with appropriate AWS credentials.
+3. To build and publish the container to stage, run `make dist-stage` and `make publish-stage`. 
+4. From Terraform Cloud, select the `workloads-patronload-stage` workspace and copy the `aws_cli_run_task` command.
+5. Run the command in your terminal and observe the results in AWS.
 
 
 ## Required ENV
