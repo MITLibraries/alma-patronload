@@ -48,10 +48,11 @@ def main() -> None:
 
     s3_client = client("s3")
     delete_zip_files_from_bucket_with_prefix(
-        s3_client, config_values["S3_BUCKET_NAME"], config_values["S3_PATH"]
+        s3_client, config_values["S3_BUCKET_NAME"], config_values["S3_PREFIX"]
     )
     existing_krb_names: list[str] = []
     for patron_type, query_params in {
+        # Staff records must always be listed first to ensure they are processed first.
         "staff": {"fields": STAFF_FIELDS, "table": "LIBRARY_EMPLOYEE"},
         "student": {"fields": STUDENT_FIELDS, "table": "LIBRARY_STUDENT"},
     }.items():
@@ -76,7 +77,7 @@ def main() -> None:
         s3_client.put_object(
             Body=zip_file_object.getvalue(),
             Bucket=config_values["S3_BUCKET_NAME"],
-            Key=f"{config_values['S3_PATH']}/{file_name}.zip",
+            Key=f"{config_values['S3_PREFIX']}/{file_name}.zip",
         )
         logger.info(
             "'%s' uploaded to S3 bucket '%s'",

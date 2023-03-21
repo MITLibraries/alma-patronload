@@ -53,7 +53,7 @@ def test_load_config_values_success():
         "PORT": "1234",
         "PATH": "database5678",
         "S3_BUCKET_NAME": "test-bucket",
-        "S3_PATH": "patronload",
+        "S3_PREFIX": "patronload",
         "WORKSPACE": "test",
     }
 

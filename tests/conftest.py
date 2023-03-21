@@ -26,7 +26,7 @@ def config_values_fixture():
         "PATH": "database5678",
         "LOG_LEVEL": "INFO",
         "S3_BUCKET_NAME": "test-bucket",
-        "S3_PATH": "patronload",
+        "S3_PREFIX": "patronload",
         "WORKSPACE": "test",
     }
     return config_values
@@ -267,7 +267,7 @@ def test_env():
         ),
         "LOG_LEVEL": "INFO",
         "S3_BUCKET_NAME": "test-bucket",
-        "S3_PATH": "patronload",
+        "S3_PREFIX": "patronload",
         "WORKSPACE": "test",
     }
     yield

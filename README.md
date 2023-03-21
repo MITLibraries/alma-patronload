@@ -45,7 +45,7 @@ To properly test with a connection to the Data Warehouse, the app must be run as
 - `DATA_WAREHOUSE_PORT` = The port for the Data Warehouse database.
 - `DATA_WAREHOUSE_SID` = The system identifier for the Data Warehouse database instance.
 - `S3_BUCKET_NAME` = The S3 bucket in which files are deposited.
-- `S3_PATH` = The file path prefix for files deposited to the S3 bucket.
+- `S3_PREFIX` = The file path prefix for files deposited to the S3 bucket.
 - `WORKSPACE` = Set to `dev` for local development, this will be set to `stage` and `prod` in those environments by Terraform.
 
 ## Optional ENV
