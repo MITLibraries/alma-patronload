@@ -11,6 +11,7 @@ from patronload.config import (
     STUDENT_FIELDS,
     configure_logger,
     configure_sentry,
+    create_log_stream_for_email,
     load_config_values,
 )
 from patronload.database import (
@@ -18,6 +19,7 @@ from patronload.database import (
     create_database_connection,
     query_database,
 )
+from patronload.email import Email
 from patronload.patron import (
     create_and_write_to_zip_file_in_memory,
     patrons_xml_string_from_records,
@@ -33,8 +35,8 @@ def main() -> None:
     config_values = load_config_values()
     root_logger = logging.getLogger()
     logger.info(configure_logger(root_logger, os.getenv("LOG_LEVEL", "INFO")))
+    stream = create_log_stream_for_email(root_logger)
     logger.info(configure_sentry())
-
     logger.info(
         "Patronload config settings loaded for environment: %s",
         config_values["WORKSPACE"],
@@ -67,8 +69,8 @@ def main() -> None:
             len(patron_records),
             patron_type,
         )
-
-        file_name = f"{patron_type}_{datetime.now().strftime('%Y-%m-%d_%H.%M.%S')}"
+        date = datetime.now()
+        file_name = f"{patron_type}_{date.strftime('%Y-%m-%d_%H.%M.%S')}"
         zip_file_object = create_and_write_to_zip_file_in_memory(
             f"{file_name}.xml",
             patrons_xml_string_from_records(
@@ -87,7 +89,19 @@ def main() -> None:
             config_values["S3_BUCKET_NAME"],
         )
 
-    elapsed_time = perf_counter() - start_time
+    email = Email()
+    email.populate(
+        from_address=config_values["SES_SEND_FROM_EMAIL"],
+        to_addresses=",".join([config_values["SES_RECIPIENT_EMAIL"]]),
+        subject=(
+            f"{config_values['WORKSPACE'].upper()} "
+            f"Patronload file creation {date.strftime('%Y-%m-%d')}"
+        ),
+        body=stream.getvalue(),
+    )
+    logger.info(email.send())
+
     logger.info(
-        "Total time to complete process: %s", str(timedelta(seconds=elapsed_time))
+        "Total time to complete process: %s",
+        str(timedelta(seconds=perf_counter() - start_time)),
     )

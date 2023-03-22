@@ -2,7 +2,12 @@ import logging
 
 import pytest
 
-from patronload.config import configure_logger, configure_sentry, load_config_values
+from patronload.config import (
+    configure_logger,
+    configure_sentry,
+    create_log_stream_for_email,
+    load_config_values,
+)
 
 
 def test_configure_logger_with_invalid_level_raises_error():
@@ -44,6 +49,11 @@ def test_configure_sentry_env_variable_is_dsn(monkeypatch):
     assert result == "Sentry DSN found, exceptions will be sent to Sentry with env=test"
 
 
+def test_create_log_stream_for_email_success():
+    stream = create_log_stream_for_email(logging.getLogger())
+    assert "Log stream handler configured" in stream.getvalue()
+
+
 def test_load_config_values_success():
     config_values = load_config_values()
     assert config_values == {
@@ -54,6 +64,8 @@ def test_load_config_values_success():
         "PATH": "database5678",
         "S3_BUCKET_NAME": "test-bucket",
         "S3_PREFIX": "patronload",
+        "SES_RECIPIENT_EMAIL": "to@example.com",
+        "SES_SEND_FROM_EMAIL": "from@example.com",
         "WORKSPACE": "test",
     }
 
