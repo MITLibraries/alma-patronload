@@ -2,6 +2,14 @@
 
 Creates Alma-compliant XML patron profiles from information extracted from the Data Warehouse and transmits those files to an S3 bucket for ingest into Alma.
 
+# Alma Processing Requirements
+Maximum size for a zip file is 4 GB
+Maximum limit of 50 XML files in one zip file
+Maximum of 20 zip files for each import/synchronization
+
+This app uploads 2 under 50MB zip files, each containing 1 XML file, so it is unlikely that the files produced will conflict with these requirements.
+
+
 ## Development
 
 - To install with dev dependencies: `make install`
@@ -45,6 +53,8 @@ To properly test with a connection to the Data Warehouse, the app must be run as
 - `DATA_WAREHOUSE_HOST` = The host for the Data Warehouse database.
 - `DATA_WAREHOUSE_PORT` = The port for the Data Warehouse database.
 - `DATA_WAREHOUSE_SID` = The system identifier for the Data Warehouse database instance.
+- `SES_RECIPIENT_EMAIL` = The email address to send to, typically a Moira list.
+- `SES_SEND_FROM_EMAIL` = The email address to send from.
 - `S3_BUCKET_NAME` = The S3 bucket in which files are deposited.
 - `S3_PREFIX` = The file path prefix for files deposited to the S3 bucket.
 - `WORKSPACE` = Set to `dev` for local development, this will be set to `stage` and `prod` in those environments by Terraform.

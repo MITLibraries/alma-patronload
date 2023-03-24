@@ -1,6 +1,7 @@
 import json
 import logging
 import os
+from io import StringIO
 
 import sentry_sdk
 
@@ -80,10 +81,32 @@ def configure_sentry() -> str:
     return "No Sentry DSN found, exceptions will not be sent to Sentry"
 
 
+def create_log_stream_for_email(logger: logging.Logger) -> StringIO:
+    """
+    Create log stream for populating email notification.
+
+    Args:
+        root_logger: The root logger to be configured with the stream handler.
+    """
+    stream = StringIO()
+    handler = logging.StreamHandler(stream)
+    formatter = logging.Formatter("%(asctime)s - %(message)s")
+    handler.setFormatter(formatter)
+    logger.addHandler(handler)
+    logger.debug("Log stream handler configured")
+    return stream
+
+
 def load_config_values() -> dict:
     """Retrieve all required env variables to update the config_values dict."""
     config_values = {}
-    for config_variable in ["S3_BUCKET_NAME", "S3_PREFIX", "WORKSPACE"]:
+    for config_variable in [
+        "S3_BUCKET_NAME",
+        "S3_PREFIX",
+        "WORKSPACE",
+        "SES_RECIPIENT_EMAIL",
+        "SES_SEND_FROM_EMAIL",
+    ]:
         config_values[config_variable] = os.environ[config_variable]
     config_values.update(json.loads(os.environ["DATAWAREHOUSE_CLOUDCONNECTOR_JSON"]))
     return config_values

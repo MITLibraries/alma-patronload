@@ -24,7 +24,7 @@ pytest = "*"
 freezegun = "*"
 types-python-dateutil = "*"
 types-beautifulsoup4 = "*"
-moto = {extras = ["s3"], version = "*"}
+moto = {extras = ["s3", "ses"], version = "*"}
 
 [requires]
 python_version = "3.11"

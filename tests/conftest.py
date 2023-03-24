@@ -5,10 +5,10 @@ import boto3
 import pytest
 from bs4 import BeautifulSoup
 from click.testing import CliRunner
-from moto import mock_s3
+from moto import mock_s3, mock_ses
 
 
-@pytest.fixture(name="credentials")
+@pytest.fixture(autouse=True, name="credentials")
 def aws_credentials():
     os.environ["AWS_ACCESS_KEY_ID"] = "testing"
     os.environ["AWS_SECRET_ACCESS_KEY"] = "testing"
@@ -33,7 +33,7 @@ def config_values_fixture():
 
 
 @pytest.fixture()
-def mocked_s3(credentials):  # pylint: disable=W0613
+def mocked_s3():
     with mock_s3():
         s3_instance = boto3.client("s3", region_name="us-east-1")
         s3_instance.create_bucket(Bucket="test-bucket")
@@ -53,6 +53,14 @@ def mocked_s3(credentials):  # pylint: disable=W0613
 @pytest.fixture()
 def s3_client():
     return boto3.client("s3", region_name="us-east-1")
+
+
+@pytest.fixture(autouse=True)
+def mocked_ses():
+    with mock_ses():
+        ses = boto3.client("ses", region_name="us-east-1")
+        ses.verify_email_identity(EmailAddress="from@example.com")
+        yield ses
 
 
 @pytest.fixture()
@@ -268,6 +276,8 @@ def test_env():
         "LOG_LEVEL": "INFO",
         "S3_BUCKET_NAME": "test-bucket",
         "S3_PREFIX": "patronload",
+        "SES_RECIPIENT_EMAIL": "to@example.com",
+        "SES_SEND_FROM_EMAIL": "from@example.com",
         "WORKSPACE": "test",
     }
     yield
