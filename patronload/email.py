@@ -6,7 +6,7 @@ import boto3
 
 
 class Email(EmailMessage):
-    """Email sublcasses EmailMessage with added functionality to populate and send."""
+    """Email subclasses EmailMessage with added functionality to populate and send."""
 
     def __init__(self, policy: EmailPolicy = default) -> None:
         """Initialize Email instance."""

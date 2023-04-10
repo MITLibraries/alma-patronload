@@ -11,8 +11,18 @@ updates:
     schedule:
       interval: "daily"
 
-  # Maintain dependencies for npm
+  # Maintain dependencies for application
   - package-ecosystem: "pip"
     directory: "/"
     schedule:
-      interval: "daily"
+      interval: "weekly"
+    reviewers:
+      - "MITLibraries/dataeng"
+
+  # Maintain dependencies for Docker
+  - package-ecosystem: "docker"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+    reviewers:
+      - "MITLibraries/dataeng"
