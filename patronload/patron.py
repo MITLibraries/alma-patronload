@@ -80,7 +80,7 @@ def populate_common_fields(
         patron_template.emails.clear()  # type: ignore[union-attr]
 
     for user_identifier in patron_template.find_all("user_identifier"):
-        if user_identifier.find("id_type", desc="Additional"):
+        if user_identifier.find("id_type", desc="MIT ID"):
             user_identifier.value.string = patron_dict["MIT_ID"] or ""
         elif user_identifier.find("id_type", desc="Barcode"):
             if patron_dict["LIBRARY_ID"] and patron_dict["LIBRARY_ID"] != "NONE":

@@ -62,7 +62,7 @@
         <is_researcher>false</is_researcher>
         <user_identifiers>
             <user_identifier segment_type="External">
-                <id_type desc="Additional">02</id_type>
+                <id_type desc="MIT ID">02</id_type>
                 <value>444444444</value>
                 <status>ACTIVE</status>
             </user_identifier>
@@ -138,7 +138,7 @@
         <is_researcher>false</is_researcher>
         <user_identifiers>
             <user_identifier segment_type="External">
-                <id_type desc="Additional">02</id_type>
+                <id_type desc="MIT ID">02</id_type>
                 <value>666666666</value>
                 <status>ACTIVE</status>
             </user_identifier>
