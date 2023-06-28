@@ -21,6 +21,23 @@ def test_cli_log_configured_from_env(
     assert "Logger 'root' configured with level=DEBUG" in caplog.text
 
 
+@patch("patronload.database.oracledb")
+@patch("patronload.cli.client")
+def test_cli_database_connection_success(
+    mocked_cli_client,
+    mocked_oracledb,
+    caplog,
+    runner,
+):
+    mocked_oracledb.connect.return_value.version = 12.34
+    result = runner.invoke(main, ["-t"])
+    assert result.exit_code == 0
+    assert "Patronload config settings loaded for environment: test" in caplog.text
+    assert "Running patronload process" in caplog.text
+    assert "Successfully connected to Oracle Database version: 12.34" in caplog.text
+    mocked_cli_client.assert_not_called()
+
+
 @freeze_time("2023-03-01 12:00:00")
 @patch("patronload.database.oracledb")
 def test_cli_success(
