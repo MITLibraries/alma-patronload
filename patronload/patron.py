@@ -259,7 +259,7 @@ def patrons_xml_string_from_records(
     with open(
         f"config/{patron_type}_template.xml", "r", encoding="utf8"
     ) as xml_template:
-        patron_template = BeautifulSoup(xml_template, features="xml")
+        patron_template = BeautifulSoup(xml_template, "html.parser")
         six_months = (date.today() + relativedelta(months=+6)).strftime(
             "%Y-%m-%d"
         ) + "Z"
