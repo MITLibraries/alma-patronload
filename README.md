@@ -3,6 +3,7 @@
 Creates Alma-compliant XML patron profiles from information extracted from the Data Warehouse and transmits those files to an S3 bucket for ingest into Alma.
 
 # Alma Processing Requirements
+
 Maximum size for a zip file is 4 GB
 Maximum limit of 50 XML files in one zip file
 Maximum of 20 zip files for each import/synchronization
@@ -20,7 +21,8 @@ This app uploads 2 under 50MB zip files, each containing 1 XML file, so it is un
 
 The Data Warehouse runs on a older version of Oracle that necessitates the `thick` mode of `python-oracledb` which requires the Oracle Instant Client Library (this app was developed with version 21.9.0.0.0.).
 
-# With Docker
+### With Docker
+
 Note: as of this writing, the Apple M1 Macs cannot run Oracle Instant Client, so Docker is the only option for development on those machines. 
 
 From the project folder:
@@ -31,15 +33,32 @@ From the project folder:
 
 3. Run `docker run alma-patronload-dev:latest`.
 
-# Without Docker
+### Without Docker
+
 1. Download [Oracle Instant Client](https://www.oracle.com/database/technologies/instant-client/downloads.html) (`basiclite` is sufficient) and set the `ORACLE_LIB_DIR` env variable.
    
 2. Run `pipenv run patronload`.
 
-# Running AWS ECS Task
+## Connecting to the Data Warehouse
+
+The password for the Data Warehouse is updated each year. To verify that the updated password works, the app must be run as an ECS task in the `stage` environment because Cloudconnector is not enabled in `dev1`. The app can run a database connection test when called with the flag, `--database_connection_test` or `-t`.
+
+1. Export stage credentials and set `ECR_NAME_STAGE` and `ECR_URL_STAGE` env variables.
+2. Run `make dependencies` with appropriate AWS credentials.
+3. Run `make database-connection-test-stage`.
+4. View the logs from the ECS task run on CloudWatch. 
+   * On CloudWatch, select the `alma-integrations-patronload-ecs-stage` log group.
+   * Select the most recent log stream. 
+   * Verify that the following log is included: 
+
+     > Successfully connected to Oracle Database version: \<VERSION NUMBER\>
+
+
+## Running AWS ECS Tasks
+
 To properly test with a connection to the Data Warehouse, the app must be run as an ECS task in the `stage` environment.
 
-1. Export stage credentials and set `ECR_NAME_STAGE` and `ECR_URL_STAGE` env variables for `alma-patronload-stage`.
+1. Export stage credentials and set `ECR_NAME_STAGE` and `ECR_URL_STAGE` env variables.
 2. Run `make dependencies` with appropriate AWS credentials.
 3. To build and publish the container to stage, run `make dist-stage` and `make publish-stage`. 
 4. From Terraform Cloud, select the `workloads-patronload-stage` workspace and copy the `aws_cli_run_task` command.
@@ -60,6 +79,7 @@ To properly test with a connection to the Data Warehouse, the app must be run as
 - `WORKSPACE` = Set to `dev` for local development, this will be set to `stage` and `prod` in those environments by Terraform.
 
 ## Optional ENV
+
 - `LOG_LEVEL` = The log level for the `alma-patronload` application. Defaults to `INFO` if not set.
 - `ORACLE_LIB_DIR` = The directory containing the Oracle Instant Client library. 
 - `SENTRY_DSN` = If set to a valid Sentry DSN, enables Sentry exception monitoring. This is not needed for local development.

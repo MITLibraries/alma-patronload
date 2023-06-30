@@ -69,13 +69,16 @@ publish-dev: dist-dev ## Build, tag and push (intended for developer-based manua
 ###   variables are set locally by the developer and that the developer has     ###
 ###   authenticated to the correct AWS Account. The values for the environment  ###
 ###   variables can be found in the stage_build.yml caller workflow.            ###
-dist-stage: ## Only use in an emergency
+dist-stage: ## While stage should generally only be used in an emergency for most repos, it is necessary for any testing requiring access to the Data Warehouse because Cloud Connector is not enabled on dev1.
 	docker build --platform linux/amd64 \
 	    -t $(ECR_URL_STAGE):latest \
 		-t $(ECR_URL_STAGE):`git describe --always` \
 		-t $(ECR_NAME_STAGE):latest .
 
-publish-stage: ## Only use in an emergency
+publish-stage: ## While stage should generally only be used in an emergency for most repos, it is necessary for any testing requiring access to the Data Warehouse because Cloud Connector is not enabled on dev1.
 	docker login -u AWS -p $$(aws ecr get-login-password --region us-east-1) $(ECR_URL_STAGE)
 	docker push $(ECR_URL_STAGE):latest
 	docker push $(ECR_URL_STAGE):`git describe --always`
+
+database-connection-test-stage: ## Use after the Data Warehouse password is changed every year to confirm that the new password works.
+	aws ecs run-task --cluster alma-integrations-patronload-ecs-stage --task-definition alma-integrations-patronload-ecs-stage --launch-type="FARGATE" --network-configuration '{"awsvpcConfiguration": {"subnets": ["subnet-05df31ac28dd1a4b0", "subnet-04cfa272d4f41dc8a"],"securityGroups": ["sg-08d197ec4530ff6b7"],"assignPublicIp": "DISABLED"}}' --overrides '{"containerOverrides": [ {"name": "alma-integrations-patronload-ecs-stage", "command": ["-t"]}]}'
