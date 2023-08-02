@@ -71,7 +71,7 @@ To properly test with a connection to the Data Warehouse, the app must be run as
 ```mermaid
 
 flowchart LR;
-    A["`**load config values** Create dictionary of config variables containing environment variables`"]
+    A[`**load config values**` Create dictionary of config variables containing environment variables]
      
 
 ```
