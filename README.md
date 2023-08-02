@@ -64,6 +64,28 @@ To properly test with a connection to the Data Warehouse, the app must be run as
 4. From Terraform Cloud, select the `workloads-patronload-stage` workspace and copy the `aws_cli_run_task` command.
 5. Run the command in your terminal and observe the results in AWS.
 
+## Workflows
+
+### Code Workflow
+
+```mermaid
+flowchart LR;
+    Amarkdown["`**load config values**
+    Create dictionary of config variables containing environment variables
+    `"] --> Bmarkdown["`**configure_logging**
+    Create logger, create email log stream, and configure sentry
+    `"] --> Cmarkdown["`**create database connection**
+    Connect to the Data Warehouse
+    `"] --> Dmarkdown["`**delete zip files from S3 bucket**
+    Delete pre-existing zip files that match a set prefix
+    `"] --> Emarkdown["`**Create queries to retrieve staff records**
+    `"] --> Fmarkdown["`**submit sql queries to Data Warehouse**`"] --> Gmarkdown["`**create XML string from records**
+    `"] --> Hmarkdown["`**create Zip file of XML string**
+    `"] --> Imarkdown["`**upload Zip file to S3**
+    `"] --> Jmarkdown["`**send email of logstream**`"]
+    
+
+```
 
 ## Required ENV
 
