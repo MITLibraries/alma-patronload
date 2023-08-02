@@ -69,20 +69,22 @@ To properly test with a connection to the Data Warehouse, the app must be run as
 ### Code Workflow
 
 ```mermaid
+%%{init: {"flowchart": {"htmlLabels": false}} }%%
+
 flowchart LR;
-    A["`**load config values**
+    Amarkdown["`**load config values**
     Create dictionary of config variables containing environment variables
-    `"] --> B["`**configure_logging**
+    `"] --> Bmarkdown["`**configure_logging**
     Create logger, create email log stream, and configure sentry
-    `"] --> C["`**create database connection**
+    `"] --> Cmarkdown["`**create database connection**
     Connect to the Data Warehouse
-    `"] --> D["`**delete zip files from S3 bucket**
+    `"] --> Dmarkdown["`**delete zip files from S3 bucket**
     Delete pre-existing zip files that match a set prefix
-    `"] --> E["`**Create queries to retrieve staff records**
-    `"] --> F["`**submit sql queries to Data Warehouse**`"] --> Gmarkdown["`**create XML string from records**
-    `"] --> H["`**create Zip file of XML string**
-    `"] --> I["`**upload Zip file to S3**
-    `"] --> J["`**send email of logstream**`"]
+    `"] --> Emarkdown["`**Create queries to retrieve staff records**
+    `"] --> Fmarkdown["`**submit sql queries to Data Warehouse**`"] --> Gmarkdown["`**create XML string from records**
+    `"] --> Hmarkdown["`**create Zip file of XML string**
+    `"] --> Imarkdown["`**upload Zip file to S3**
+    `"] --> Jmarkdown["`**send email of logstream**`"]
     
 
 ```
