@@ -71,8 +71,22 @@ To properly test with a connection to the Data Warehouse, the app must be run as
 ```mermaid
 
 flowchart LR;
-    A[`**load config values**` Create dictionary of config variables containing environment variables]
-     
+    A["load config values
+    Create dictionary of config variables containing environment variables"] --> 
+    B["configure_logging
+    Create logger, create email log stream, and configure sentry"] --> 
+    C["create database connection
+    Connect to the Data Warehouse"] --> 
+    D["delete zip files from S3 bucket
+    Delete pre-existing zip files that match a set prefix"] -->
+    E["build SQL query"] --> 
+    F["submit SQL queries to Data Warehouse"] --> 
+    G["create XML string from records"] --> 
+    H["create zip file of XML string"] --> 
+    I["upload zip file to S3"]
+    I --> J["trigger file ingestion into Alma"]
+    I --> K["send log stream email"]
+    
 
 ```
 
