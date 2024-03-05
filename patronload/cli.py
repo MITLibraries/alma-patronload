@@ -1,6 +1,6 @@
+import datetime
 import logging
 import os
-from datetime import datetime, timedelta
 from time import perf_counter
 
 import click
@@ -31,7 +31,7 @@ logger = logging.getLogger(__name__)
 
 @click.command()
 @click.option("-t", "--database_connection_test", is_flag=True)
-def main(database_connection_test: bool) -> None:  # pylint: disable=R0914
+def main(database_connection_test: bool) -> None:  # noqa: FBT001
     start_time = perf_counter()
     config_values = load_config_values()
     root_logger = logging.getLogger()
@@ -70,7 +70,7 @@ def main(database_connection_test: bool) -> None:  # pylint: disable=R0914
                 len(patron_records),
                 patron_type,
             )
-            date = datetime.now()
+            date = datetime.datetime.now(tz=datetime.UTC)
             file_name = f"{patron_type}_{date.strftime('%Y-%m-%d_%H.%M.%S')}"
             zip_file_object = create_and_write_to_zip_file_in_memory(
                 f"{file_name}.xml",
@@ -104,5 +104,5 @@ def main(database_connection_test: bool) -> None:  # pylint: disable=R0914
 
     logger.info(
         "Total time to complete process: %s",
-        str(timedelta(seconds=perf_counter() - start_time)),
+        str(datetime.timedelta(seconds=perf_counter() - start_time)),
     )

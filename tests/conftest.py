@@ -1,24 +1,36 @@
 import datetime
-import os
 
 import boto3
 import pytest
 from bs4 import BeautifulSoup
 from click.testing import CliRunner
-from moto import mock_s3, mock_ses
+from moto import mock_aws
 
 
-@pytest.fixture(autouse=True, name="credentials")
-def aws_credentials():
-    os.environ["AWS_ACCESS_KEY_ID"] = "testing"
-    os.environ["AWS_SECRET_ACCESS_KEY"] = "testing"
-    os.environ["AWS_SECURITY_TOKEN"] = "testing"
-    os.environ["AWS_SESSION_TOKEN"] = "testing"
+@pytest.fixture(autouse=True)
+def _test_env(monkeypatch):
+    monkeypatch.setenv("AWS_ACCESS_KEY_ID", "testing")
+    monkeypatch.setenv("AWS_SECRET_ACCESS_KEY", "testing")
+    monkeypatch.setenv("AWS_SECURITY_TOKEN", "testing")
+    monkeypatch.setenv("AWS_SESSION_TOKEN", "testing")
+    monkeypatch.setenv(
+        "DATAWAREHOUSE_CLOUDCONNECTOR_JSON",
+        (
+            '{"USER": "user123",  "PASSWORD": "pass123", "HOST": "http://localhost", '
+            '"PORT": "1234", "PATH": "database5678"}'
+        ),
+    )
+    monkeypatch.setenv("LOG_LEVEL", "INFO")
+    monkeypatch.setenv("S3_BUCKET_NAME", "test-bucket")
+    monkeypatch.setenv("S3_PREFIX", "patronload")
+    monkeypatch.setenv("SES_RECIPIENT_EMAIL", "to@example.com")
+    monkeypatch.setenv("SES_SEND_FROM_EMAIL", "from@example.com")
+    monkeypatch.setenv("WORKSPACE", "test")
 
 
 @pytest.fixture(name="config_values")
 def config_values_fixture():
-    config_values = {
+    return {
         "USER": "user123",
         "PASSWORD": "pass123",
         "HOST": "http://localhost",
@@ -29,12 +41,11 @@ def config_values_fixture():
         "S3_PREFIX": "patronload",
         "WORKSPACE": "test",
     }
-    return config_values
 
 
-@pytest.fixture()
+@pytest.fixture
 def mocked_s3():
-    with mock_s3():
+    with mock_aws():
         s3_instance = boto3.client("s3", region_name="us-east-1")
         s3_instance.create_bucket(Bucket="test-bucket")
         s3_instance.put_object(
@@ -50,20 +61,20 @@ def mocked_s3():
         yield s3_instance
 
 
-@pytest.fixture()
+@pytest.fixture
 def s3_client():
     return boto3.client("s3", region_name="us-east-1")
 
 
 @pytest.fixture(autouse=True)
 def mocked_ses():
-    with mock_ses():
+    with mock_aws():
         ses = boto3.client("ses", region_name="us-east-1")
         ses.verify_email_identity(EmailAddress="from@example.com")
         yield ses
 
 
-@pytest.fixture()
+@pytest.fixture
 def staff_database_record_with_all_values():
     return (
         "444444444",
@@ -73,7 +84,7 @@ def staff_database_record_with_all_values():
         "Doe, Jane",
         "AA-B1-11",
         "5555555555",
-        datetime.datetime(2023, 6, 30, 0, 0),
+        datetime.datetime(2023, 6, 30, 0, 0, tzinfo=datetime.UTC),
         "27",
         "Staff - Lincoln Labs",
         "10000948",
@@ -83,7 +94,7 @@ def staff_database_record_with_all_values():
     )
 
 
-@pytest.fixture()
+@pytest.fixture
 def staff_database_record_krb_and_null_values():
     return (
         "666666666",
@@ -103,7 +114,7 @@ def staff_database_record_krb_and_null_values():
     )
 
 
-@pytest.fixture()
+@pytest.fixture
 def staff_database_record_with_null_values():
     return (
         "222222222",
@@ -123,7 +134,7 @@ def staff_database_record_with_null_values():
     )
 
 
-@pytest.fixture()
+@pytest.fixture
 def staff_patron_all_values_dict():
     return {
         "FULL_NAME": "Doe, Jane",
@@ -131,7 +142,7 @@ def staff_patron_all_values_dict():
         "OFFICE_PHONE": "5555555555",
         "MIT_ID": "222222222",
         "EMAIL_ADDRESS": "STAFF_KRB_NAME@MIT.EDU",
-        "APPOINTMENT_END_DATE": datetime.datetime(2023, 6, 30, 0, 0),
+        "APPOINTMENT_END_DATE": datetime.datetime(2023, 6, 30, 0, 0, tzinfo=datetime.UTC),
         "KRB_NAME_UPPERCASE": "STAFF_KRB_NAME",
         "LIBRARY_PERSON_TYPE_CODE": "27",
         "LIBRARY_PERSON_TYPE": "Staff - Lincoln Labs",
@@ -143,7 +154,7 @@ def staff_patron_all_values_dict():
     }
 
 
-@pytest.fixture()
+@pytest.fixture
 def student_database_record_with_all_values():
     return (
         "333333333",
@@ -166,7 +177,7 @@ def student_database_record_with_all_values():
     )
 
 
-@pytest.fixture()
+@pytest.fixture
 def student_database_record_krb_and_null_values():
     return (
         "555555555",
@@ -189,7 +200,7 @@ def student_database_record_krb_and_null_values():
     )
 
 
-@pytest.fixture()
+@pytest.fixture
 def student_database_record_with_null_values():
     return (
         "111111111",
@@ -212,7 +223,7 @@ def student_database_record_with_null_values():
     )
 
 
-@pytest.fixture()
+@pytest.fixture
 def student_patron_all_values_dict():
     return {
         "MIT_ID": "111111111",
@@ -235,49 +246,30 @@ def student_patron_all_values_dict():
     }
 
 
-@pytest.fixture()
+@pytest.fixture
 def staff_patron_template():
-    with open("config/staff_template.xml", "r", encoding="utf8") as xml_template:
+    with open("config/staff_template.xml", encoding="utf8") as xml_template:
         return BeautifulSoup(xml_template, features="xml")
 
 
-@pytest.fixture()
+@pytest.fixture
 def staff_patrons_xml():
-    with open("tests/fixtures/staff_patrons.xml", "r", encoding="utf8") as patrons_xml:
+    with open("tests/fixtures/staff_patrons.xml", encoding="utf8") as patrons_xml:
         return BeautifulSoup(patrons_xml, features="xml")
 
 
-@pytest.fixture()
+@pytest.fixture
 def student_patron_template():
-    with open("config/student_template.xml", "r", encoding="utf8") as xml_template:
+    with open("config/student_template.xml", encoding="utf8") as xml_template:
         return BeautifulSoup(xml_template, features="xml")
 
 
-@pytest.fixture()
+@pytest.fixture
 def student_patrons_xml():
-    with open(
-        "tests/fixtures/student_patrons.xml", "r", encoding="utf8"
-    ) as patrons_xml:
+    with open("tests/fixtures/student_patrons.xml", encoding="utf8") as patrons_xml:
         return BeautifulSoup(patrons_xml, features="xml")
 
 
-@pytest.fixture()
+@pytest.fixture
 def runner():
     return CliRunner()
-
-
-@pytest.fixture(autouse=True)
-def test_env():
-    os.environ = {
-        "DATAWAREHOUSE_CLOUDCONNECTOR_JSON": (
-            '{"USER": "user123",  "PASSWORD": "pass123", "HOST": "http://localhost", '
-            '"PORT": "1234", "PATH": "database5678"}'
-        ),
-        "LOG_LEVEL": "INFO",
-        "S3_BUCKET_NAME": "test-bucket",
-        "S3_PREFIX": "patronload",
-        "SES_RECIPIENT_EMAIL": "to@example.com",
-        "SES_SEND_FROM_EMAIL": "from@example.com",
-        "WORKSPACE": "test",
-    }
-    yield

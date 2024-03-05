@@ -4,8 +4,7 @@ import oracledb
 
 
 def build_sql_query(fields: list[str], table: str) -> str:
-    """
-    Build a SQL query for an Oracle database from a list of fields and a table name.
+    """Build a SQL query for an Oracle database from a list of fields and a table name.
 
     Args:
         fields: The list of fields to retrieve.
@@ -17,8 +16,7 @@ def build_sql_query(fields: list[str], table: str) -> str:
 
 
 def create_database_connection(config_values: dict[str, str]) -> oracledb.Connection:
-    """
-    Create a connection to an Oracle database for submitting queries.
+    """Create a connection to an Oracle database for submitting queries.
 
     Args:
         config_values: A dict with the necessary values to configure an
@@ -36,8 +34,7 @@ def create_database_connection(config_values: dict[str, str]) -> oracledb.Connec
 
 
 def query_database(connection: oracledb.Connection, query: str) -> list[tuple]:
-    """
-    Submit a SQL query to an Oracle Database and retrieve the results.
+    """Submit a SQL query to an Oracle Database and retrieve the results.
 
     Args:
         connection: An Oracle database connection.
