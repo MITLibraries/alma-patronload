@@ -4,27 +4,28 @@ verify_ssl = true
 name = "pypi"
 
 [packages]
-click = "*"
-sentry-sdk = "*"
-oracledb = "*"
-bs4 = "*"
-lxml = "*"
-python-dateutil = "*"
 boto3 = "*"
 boto3-stubs = {extras = ["essential"], version = "*"}
+bs4 = "*"
+click = "*"
+lxml = "*"
+oracledb = "*"
+python-dateutil = "*"
+sentry-sdk = "*"
 
 [dev-packages]
-bandit = "*"
 black = "*"
 coverage = "*"
 coveralls = "*"
-mypy = "*"
-pylama = {extras = ["all"], version = "*"}
-pytest = "*"
 freezegun = "*"
-types-python-dateutil = "*"
-types-beautifulsoup4 = "*"
 moto = {extras = ["s3", "ses"], version = "*"}
+mypy = "*"
+pre-commit = "*"
+pytest = "*"
+ruff = "*"
+safety = "*"
+types-beautifulsoup4 = "*"
+types-python-dateutil = "*"
 
 [requires]
 python_version = "3.11"
