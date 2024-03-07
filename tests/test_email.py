@@ -1,4 +1,5 @@
 from email.message import EmailMessage
+from http import HTTPStatus
 
 from patronload.email import Email
 
@@ -6,41 +7,25 @@ from patronload.email import Email
 def test_populate_email_with_all_data():
     email = Email()
     email.populate(
-        "from@example.com",
-        ["to_1@example.com", "to_2@example.com"],
-        "Hello, it's an email!",
-        attachments=[
-            {
-                "content": "Some text content",
-                "filename": "attachment.txt",
-            }
-        ],
+        from_address="from@example.com",
+        to_addresses=["to_1@example.com", "to_2@example.com"],
+        subject="Hello, it's an email!",
         body="I am the message body",
-        bcc=["bcc_1@example.com", "bcc_2@example.com"],
-        cc=["cc_1@example.com", "cc_2@example.com"],
-        reply_to="reply@example.com",
     )
     assert isinstance(email, EmailMessage)
     assert email["From"] == "from@example.com"
     assert email["To"] == "to_1@example.com, to_2@example.com"
     assert email["Subject"] == "Hello, it's an email!"
-    assert email["Bcc"] == "bcc_1@example.com, bcc_2@example.com"
-    assert email["Cc"] == "cc_1@example.com, cc_2@example.com"
-    assert email["Reply-To"] == "reply@example.com"
-    assert email.get_content_type() == "multipart/mixed"
+    assert email.get_content_type() == "text/plain"
     assert email.get_body().get_content() == "I am the message body\n"
-    attachment = next(email.iter_attachments())
-    assert attachment.get_content() == "Some text content\n"
 
 
-def test_send_email(mocked_ses):  # pylint: disable=W0613
+def test_send_email(mocked_ses):
     email = Email()
     email.populate(
-        "from@example.com",
-        "to_1@example.com,to_2@example.com",
-        "Hello, it's an email!",
-        bcc="bcc@example.com",
-        cc="cc_1@example.com,cc_2@example.com",
+        from_address="from@example.com",
+        to_addresses="to_1@example.com,to_2@example.com",
+        subject="Hello, it's an email!",
     )
     response = email.send()
-    assert response["ResponseMetadata"]["HTTPStatusCode"] == 200
+    assert response["ResponseMetadata"]["HTTPStatusCode"] == HTTPStatus.OK

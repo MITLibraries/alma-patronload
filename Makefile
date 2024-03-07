@@ -10,10 +10,15 @@ DATETIME:=$(shell date -u +%Y%m%dT%H%M%SZ)
 S3_BUCKET:=shared-files-$(shell aws sts get-caller-identity --query "Account" --output text)
 ORACLE_ZIP:=instantclient-basiclite-linux.x64-21.9.0.0.0dbru.zip
 
+help: ## Print this message
+	@awk 'BEGIN { FS = ":.*##"; print "Usage:  make <target>\n\nTargets:" } \
+/^[-_[:alpha:]]+:.?*##/ { printf "  %-15s%s\n", $$1, $$2 }' $(MAKEFILE_LIST)
+
 ### Dependency commands ###
 
 install: ## Install dependencies and CLI app
 	pipenv install --dev
+	pipenv run pre-commit install
 
 update: install ## Update all Python dependencies
 	pipenv clean
@@ -31,25 +36,30 @@ test: ## Run tests and print a coverage report
 coveralls: test
 	pipenv run coverage lcov -o ./coverage/lcov.info
 
-### Code quality and safety commands ###
-
-lint: bandit black mypy pylama safety ## Run linting, code quality, and safety checks
-
-bandit:
-	pipenv run bandit -r patronload
+# linting commands
+lint: black mypy ruff safety 
 
 black:
 	pipenv run black --check --diff .
 
 mypy:
-	pipenv run mypy patronload
+	pipenv run mypy .
 
-pylama:
-	pipenv run pylama --options setup.cfg
+ruff:
+	pipenv run ruff check .
 
 safety:
 	pipenv check
 	pipenv verify
+
+# apply changes to resolve any linting errors
+lint-apply: black-apply ruff-apply
+
+black-apply: 
+	pipenv run black .
+
+ruff-apply: 
+	pipenv run ruff check --fix .
 
 
 ### Terraform-generated Developer Deploy Commands for Dev environment           ###

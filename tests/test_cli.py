@@ -9,10 +9,10 @@ from patronload.cli import main
 
 @patch("patronload.database.oracledb")
 def test_cli_log_configured_from_env(
-    mocked_oracledb,  # pylint: disable=W0613
+    mocked_oracledb,
     caplog,
     monkeypatch,
-    mocked_s3,  # pylint: disable=W0613
+    mocked_s3,
     runner,
 ):
     monkeypatch.setenv("LOG_LEVEL", "debug")
@@ -62,12 +62,9 @@ def test_cli_success(
     s3_bucket_path_contents = mocked_s3.list_objects_v2(
         Bucket="test-bucket", Prefix="patronload"
     )["Contents"]
+    assert s3_bucket_path_contents[0]["Key"] == "patronload/staff_2023-03-01_12.00.00.zip"
     assert (
-        s3_bucket_path_contents[0]["Key"] == "patronload/staff_2023-03-01_12.00.00.zip"
-    )
-    assert (
-        s3_bucket_path_contents[1]["Key"]
-        == "patronload/student_2023-03-01_12.00.00.zip"
+        s3_bucket_path_contents[1]["Key"] == "patronload/student_2023-03-01_12.00.00.zip"
     )
     assert "Total time to complete process" in caplog.text
 
@@ -113,9 +110,9 @@ def test_cli_duplicate_krb_name_remains_staff_patron(
         Key="patronload/staff_2023-03-01_12.00.00.zip",
     )
     with ZipFile(BytesIO(staff_zip_file["Body"].read()), "r") as zip_file:
-        assert "STAFF_KRB_NAME" in zip_file.read(
-            "staff_2023-03-01_12.00.00.xml"
-        ).decode("utf-8")
+        assert "STAFF_KRB_NAME" in zip_file.read("staff_2023-03-01_12.00.00.xml").decode(
+            "utf-8"
+        )
 
     student_zip_file = s3_client.get_object(
         Bucket="test-bucket",

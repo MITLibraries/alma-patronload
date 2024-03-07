@@ -10,8 +10,7 @@ def delete_zip_files_from_bucket_with_prefix(
     s3_bucket_name: str,
     s3_prefix: str,
 ) -> None:
-    """
-    Delete zip file objects with the specified prefix from the specified bucket.
+    """Delete zip file objects with the specified prefix from the specified bucket.
 
     Args:
         s3_client: A configured s3 client.

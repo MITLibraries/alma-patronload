@@ -42,18 +42,19 @@ STUDENT_FIELDS = [
     "HOME_DEPARTMENT",
 ]
 
-with open("config/staff_departments.txt", "r", encoding="utf8") as txt_file:
+with open("config/staff_departments.txt", encoding="utf8") as txt_file:
     STAFF_DEPARTMENTS: dict[str, str] = json.load(txt_file)
 
-with open("config/student_departments.txt", "r", encoding="utf8") as txt_file:
+with open("config/student_departments.txt", encoding="utf8") as txt_file:
     STUDENT_DEPARTMENTS: dict[str, str] = json.load(txt_file)
 
 
 def configure_logger(logger: logging.Logger, log_level_string: str) -> str:
     if log_level_string.upper() not in logging.getLevelNamesMapping():
-        raise ValueError(f"'{log_level_string}' is not a valid Python logging level")
+        message = f"'{log_level_string}' is not a valid Python logging level"
+        raise ValueError(message)
     log_level = logging.getLevelName(log_level_string.upper())
-    if log_level < 20:
+    if log_level < logging.INFO:
         logging.basicConfig(
             format="%(asctime)s %(levelname)s %(name)s.%(funcName)s() line %(lineno)d: "
             "%(message)s"
@@ -82,11 +83,10 @@ def configure_sentry() -> str:
 
 
 def create_log_stream_for_email(logger: logging.Logger) -> StringIO:
-    """
-    Create log stream for populating email notification.
+    """Create log stream for populating email notification.
 
     Args:
-        root_logger: The root logger to be configured with the stream handler.
+        logger: The root logger to be configured with the stream handler.
     """
     stream = StringIO()
     handler = logging.StreamHandler(stream)

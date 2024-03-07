@@ -2,7 +2,21 @@
 
 Creates Alma-compliant XML patron profiles from information extracted from the Data Warehouse and transmits those files to an S3 bucket for ingest into Alma.
 
-# Alma Processing Requirements
+## Description
+
+This application runs daily to create and deliver XML files for Alma to retrieve and load. It establishes a connection to the [Data Warehouse](https://ist.mit.edu/warehouse) and retrieves data for student and staff patrons via SQL queries. Different data are required for students and staff so separate queries are run againt the student and staff tables to retrieve the necessary data for each.
+
+Though the zip files receive a suffix from Alma after processing to prevent them being re-processed, the application removes any existing zip files from the S3 bucket at the start of a run. This prevents any potential errors if Alma were to process more than 1 zip file of either staff or student data. 
+
+Given that student employees may appear as both staff and students, the application processing the staff names first and checks student names against the staff names to ensure that student employees only loaded into Alma once. 
+
+A zip file is created for each patron type containing an XML file with the Data Warehouse output formatted according to a template.
+
+The staff and student zip files are then posted to the specified S3 bucket.
+
+Finally, the application sends an email with the logs from the run to the `lib-alma-notifications` list.
+
+## Alma Processing Requirements
 
 Maximum size for a zip file is 4 GB
 Maximum limit of 50 XML files in one zip file
