@@ -57,10 +57,9 @@ From the project folder:
 
 The password for the Data Warehouse is updated each year. To verify that the updated password works, the app must be run as an ECS task in the `stage` environment because Cloudconnector is not enabled in `dev1`. The app can run a database connection test when called with the flag, `--database_connection_test` or `-t`.
 
-1. Export stage credentials and set `ECR_NAME_STAGE` and `ECR_URL_STAGE` env variables.
-2. Run `make dependencies` with appropriate AWS credentials.
-3. Run `make database-connection-test-stage`.
-4. View the logs from the ECS task run on CloudWatch. 
+1. Set AWS credentials for `PatronloadManagers` role in stage
+2. Run `make database-connection-test-stage`.
+3. View the logs from the ECS task run on CloudWatch. 
    * On CloudWatch, select the `alma-integrations-patronload-ecs-stage` log group.
    * Select the most recent log stream. 
    * Verify that the following log is included: 
@@ -72,28 +71,37 @@ The password for the Data Warehouse is updated each year. To verify that the upd
 
 To properly test with a connection to the Data Warehouse, the app must be run as an ECS task in the `stage` environment.
 
-1. Export stage credentials and set `ECR_NAME_STAGE` and `ECR_URL_STAGE` env variables.
-2. Run `make dependencies` with appropriate AWS credentials.
-3. To build and publish the container to stage, run `make dist-stage` and `make publish-stage`. 
-4. From Terraform Cloud, select the `workloads-patronload-stage` workspace and copy the `aws_cli_run_task` command.
-5. Run the command in your terminal and observe the results in AWS.
+1. Set AWS credentials for `PatronloadManagers` role in stage
+2. Set `ECR_NAME_STAGE` and `ECR_URL_STAGE` in `.env` file (see `ECR_NAME_DEV` and `ECR_URL_DEV` from `Makefile` for guidance).
+3. Run `make dependencies`.
+4. Build the image locally: `make dist-stage`.
+5. Publish the image to AWS ECR for stage: `make publish-stage`.
+6. From Terraform Cloud, select the `workloads-patronload-stage` workspace and copy the `aws_cli_run_task` command.
+7. Run the command in your terminal and observe the results in AWS.
 
 
-## Required ENV
+## Environment Variables
 
-- `DATA_WAREHOUSE_USER` = The user for the Data Warehouse database.
-- `DATA_WAREHOUSE_PASSWORD` = The password for the Data Warehouse database.
-- `DATA_WAREHOUSE_HOST` = The host for the Data Warehouse database.
-- `DATA_WAREHOUSE_PORT` = The port for the Data Warehouse database.
-- `DATA_WAREHOUSE_SID` = The system identifier for the Data Warehouse database instance.
-- `SES_RECIPIENT_EMAIL` = The email address to send to, typically a Moira list.
-- `SES_SEND_FROM_EMAIL` = The email address to send from.
-- `S3_BUCKET_NAME` = The S3 bucket in which files are deposited.
-- `S3_PREFIX` = The file path prefix for files deposited to the S3 bucket.
-- `WORKSPACE` = Set to `dev` for local development, this will be set to `stage` and `prod` in those environments by Terraform.
+### Required
+```shell
+DATA_WAREHOUSE_USER=# The user for the Data Warehouse database.
+DATA_WAREHOUSE_PASSWORD=# The password for the Data Warehouse database.
+DATA_WAREHOUSE_HOST=# The host for the Data Warehouse database.
+DATA_WAREHOUSE_PORT=# The port for the Data Warehouse database.
+DATA_WAREHOUSE_SID=# The system identifier for the Data Warehouse database instance.
+SES_RECIPIENT_EMAIL=# The email address to send to, typically a Moira list.
+SES_SEND_FROM_EMAIL=# The email address to send from.
+S3_BUCKET_NAME=# The S3 bucket in which files are deposited.
+S3_PREFIX=# The file path prefix for files deposited to the S3 bucket.
+WORKSPACE=# Set to `dev` for local development, this will be set to `stage` and `prod` in those environments by Terraform.
+```
 
-## Optional ENV
 
-- `LOG_LEVEL` = The log level for the `alma-patronload` application. Defaults to `INFO` if not set.
-- `ORACLE_LIB_DIR` = The directory containing the Oracle Instant Client library. 
-- `SENTRY_DSN` = If set to a valid Sentry DSN, enables Sentry exception monitoring. This is not needed for local development.
+### Optional
+
+```shell
+LOG_LEVEL=# The log level for the `alma-patronload` application. Defaults to `INFO` if not set.
+ORACLE_LIB_DIR=# The directory containing the Oracle Instant Client library. 
+SENTRY_DSN=# If set to a valid Sentry DSN, enables Sentry exception monitoring. This is not needed for local development.
+```
+
