@@ -1,4 +1,4 @@
-from email.message import EmailMessage
+from email.message import EmailMessage  # noqa: A005
 from email.policy import EmailPolicy, default
 
 import boto3
@@ -7,7 +7,10 @@ import boto3
 class Email(EmailMessage):
     """Email subclasses EmailMessage with added functionality to populate and send."""
 
-    def __init__(self, policy: EmailPolicy = default) -> None:
+    def __init__(
+        self,
+        policy: EmailPolicy = default,  # type: ignore[assignment]
+    ) -> None:
         """Initialize Email instance."""
         super().__init__(policy)
 

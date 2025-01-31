@@ -23,9 +23,7 @@ lint.select = ["ALL", "PT"]
 
 lint.ignore = [
     # default
-    "ANN101", 
-    "ANN102", 
-    "COM812", 
+    "COM812",
     "D107", 
     "N812", 
     "PTH", 
