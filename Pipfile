@@ -28,7 +28,7 @@ types-beautifulsoup4 = "*"
 types-python-dateutil = "*"
 
 [requires]
-python_version = "3.11"
+python_version = "3.12"
 
 [scripts]
 patronload = "python -c \"from patronload.cli import main; main()\""
