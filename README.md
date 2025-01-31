@@ -105,3 +105,28 @@ ORACLE_LIB_DIR=# The directory containing the Oracle Instant Client library.
 SENTRY_DSN=# If set to a valid Sentry DSN, enables Sentry exception monitoring. This is not needed for local development.
 ```
 
+## Related Assets
+
+* Infrastructure: [mitlib-tf-workloads-patronload](https://github.com/MITLibraries/mitlib-tf-workloads-patronload)
+* Depends-on Application: [CloudConnector](https://github.com/MITLibraries/cloudconnector)
+
+```mermaid
+mindmap
+    root((alma-patronload))
+        (infrastructure)
+            ["`mitlib-tf-
+            workloads-patronload`"]
+        (depends-on)
+            [CloudConnector]
+        (output)
+            ["`Writes data as 
+            zip file(s) to S3`"]
+        (reporting)
+            [Emails stakeholders]
+```
+
+## Maintainers
+
+* Team: [DataEng](https://github.com/orgs/MITLibraries/teams/dataeng)
+* Last Maintenance: 2025-01
+* External Documentation: _TODO..._
