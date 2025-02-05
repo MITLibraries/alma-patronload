@@ -10,7 +10,7 @@ exclude = ["tests/"]
 log_level = "INFO"
 
 [tool.ruff]
-target-version = "py311"
+target-version = "py312"
 
 # set max line length
 line-length = 90
@@ -23,9 +23,7 @@ lint.select = ["ALL", "PT"]
 
 lint.ignore = [
     # default
-    "ANN101", 
-    "ANN102", 
-    "COM812", 
+    "COM812",
     "D107", 
     "N812", 
     "PTH", 
