@@ -26,6 +26,7 @@ ruff = "*"
 safety = "*"
 types-beautifulsoup4 = "*"
 types-python-dateutil = "*"
+pip-audit = "*"
 
 [requires]
 python_version = "3.12"

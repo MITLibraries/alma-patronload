@@ -1,4 +1,4 @@
-from email.message import EmailMessage  # noqa: A005
+from email.message import EmailMessage
 from email.policy import EmailPolicy, default
 
 import boto3
