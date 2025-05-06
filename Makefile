@@ -48,8 +48,8 @@ mypy:
 ruff:
 	pipenv run ruff check .
 
-safety:
-	pipenv check
+safety: # Check for security vulnerabilities and verify Pipfile.lock is up-to-date
+	pipenv run pip-audit
 	pipenv verify
 
 # apply changes to resolve any linting errors
