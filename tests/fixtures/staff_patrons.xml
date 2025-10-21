@@ -3,9 +3,9 @@
     <user>
         <record_type desc="Public">PUBLIC</record_type>
         <primary_id>STAFF_KRB_NAME@MIT.EDU</primary_id>
-        <first_name>Jane</first_name>
+        <first_name>Nancy</first_name>
         <middle_name />
-        <last_name>Doe</last_name>
+        <last_name>Drew</last_name>
         <user_title desc="" />
         <job_category desc="" />
         <job_description />
@@ -55,9 +55,9 @@
                 </phone>
             </phones>
         </contact_info>
-        <pref_first_name />
-        <pref_middle_name />
-        <pref_last_name />
+        <pref_first_name>Nancy-preferred</pref_first_name>
+        <pref_middle_name></pref_middle_name>
+        <pref_last_name>Drew-preferred</pref_last_name>
         <pref_name_suffix />
         <is_researcher>false</is_researcher>
         <user_identifiers>
