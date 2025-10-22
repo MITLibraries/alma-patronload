@@ -26,39 +26,38 @@
         },
         "boto3": {
             "hashes": [
-                "sha256:27e35b4fa9edd414ce06c1a748bf57cacd8203271847d93fc1053e4a4ec6e1a9",
-                "sha256:2e30f5a0d49e107b8a5c0c487891afd300bfa410e1d918bf187ae45ac3839332"
+                "sha256:8985a840d57671aa3c6124b0c178e79be97e3447de4b5819156071793f82ee5c"
             ],
             "index": "pypi",
             "markers": "python_version >= '3.9'",
-            "version": "==1.40.55"
+            "version": "==1.40.56"
         },
         "boto3-stubs": {
             "extras": [
                 "essential"
             ],
             "hashes": [
-                "sha256:4632f909719218c439e1a73c52ae94fb1c7252a5064ebcb0efe04388d8bd48d9",
-                "sha256:a11adaf8eac77c4ed4c1b7bf7241b0cd9ad023dc1c17c49b45f35adf4c21b7ff"
+                "sha256:638398e9b58769db8d050f93cd81aab8213e6a617f13dcd1632c4b09c870c732",
+                "sha256:e5644523eff7f50bade5e9f4a24544b40f849e9051949e3501203a20627f4263"
             ],
             "markers": "python_version >= '3.8'",
-            "version": "==1.40.55"
+            "version": "==1.40.56"
         },
         "botocore": {
             "hashes": [
-                "sha256:79b6472e2de92b3519d44fc1eec8c5feced7f99a0d10fdea6dc93133426057c1",
-                "sha256:cdc38f7a4ddb30a2cd1cdd4fabde2a5a16e41b5a642292e1c30de5c4e46f5d44"
+                "sha256:0962dfc9bfb0afa1855042a88a72cc722cc7f9c08f51d2c5c88181d525a59a27",
+                "sha256:b29df3418a299609632cab240ee79275463b176ebeb3adc841ba367a3fa0c4db"
             ],
             "markers": "python_version >= '3.9'",
-            "version": "==1.40.55"
+            "version": "==1.40.56"
         },
         "botocore-stubs": {
             "hashes": [
-                "sha256:57c8978b0bbe40a9fa29fde564de8a04679a223f430a97d03ada62ec112231af",
-                "sha256:fdc85df8960a6f156c57c5980d125c7467134ca8d612f32175cb88a49a0a6cf5"
+                "sha256:aa9535b8a0f7135b062504e39e7cbc83fb3f00b2d4dc2baba6170436b494b696",
+                "sha256:e6494eef30a5979e8f270f058bd81bc803641fa0ea97414b53c7f0e52d82d227"
             ],
             "markers": "python_version >= '3.9'",
-            "version": "==1.40.55"
+            "version": "==1.40.56"
         },
         "bs4": {
             "hashes": [
@@ -400,11 +399,11 @@
         },
         "mypy-boto3-dynamodb": {
             "hashes": [
-                "sha256:58fa3a638b1caef5644b60f5894e1182a2951feb30a3dc6dedb34e1b0c9ded99",
-                "sha256:ab978a9d24997d513c5e35bf4aae9b3dfe4f8482a13799180ecefbb1dc93d271"
+                "sha256:3bf3f541a0d21c249109dd65f18c61b3e6a0fe7124b3afe989877d5cca42b65a",
+                "sha256:576dd12fe1125754066e7fa480f92c123220970a9d69f7663a56d701f2978ac5"
             ],
             "markers": "python_version >= '3.8'",
-            "version": "==1.40.44"
+            "version": "==1.40.56"
         },
         "mypy-boto3-ec2": {
             "hashes": [
@@ -630,19 +629,18 @@
         },
         "boto3": {
             "hashes": [
-                "sha256:27e35b4fa9edd414ce06c1a748bf57cacd8203271847d93fc1053e4a4ec6e1a9",
-                "sha256:2e30f5a0d49e107b8a5c0c487891afd300bfa410e1d918bf187ae45ac3839332"
+                "sha256:8985a840d57671aa3c6124b0c178e79be97e3447de4b5819156071793f82ee5c"
             ],
             "markers": "python_version >= '3.9'",
-            "version": "==1.40.55"
+            "version": "==1.40.56"
         },
         "botocore": {
             "hashes": [
-                "sha256:79b6472e2de92b3519d44fc1eec8c5feced7f99a0d10fdea6dc93133426057c1",
-                "sha256:cdc38f7a4ddb30a2cd1cdd4fabde2a5a16e41b5a642292e1c30de5c4e46f5d44"
+                "sha256:0962dfc9bfb0afa1855042a88a72cc722cc7f9c08f51d2c5c88181d525a59a27",
+                "sha256:b29df3418a299609632cab240ee79275463b176ebeb3adc841ba367a3fa0c4db"
             ],
             "markers": "python_version >= '3.9'",
-            "version": "==1.40.55"
+            "version": "==1.40.56"
         },
         "cachecontrol": {
             "extras": [
