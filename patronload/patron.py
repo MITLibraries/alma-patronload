@@ -217,16 +217,14 @@ def populate_common_fields(
         six_months: Six months from the current date.
         two_years: Two years from the current date.
     """
-    # If preferred names are provided, use them; otherwise, fall back to legal names
-    # preferred middle name is optional
     patron_template.pref_first_name.string = (  # type: ignore[union-attr]
-        patron_dict["PREFERRED_FIRST_NAME"] or patron_dict["LEGAL_FIRST_NAME"] or ""
+        patron_dict["PREFERRED_FIRST_NAME"] or ""
     )
     patron_template.pref_middle_name.string = (  # type: ignore[union-attr]
         patron_dict["PREFERRED_MIDDLE_NAME"] or ""
     )
     patron_template.pref_last_name.string = (  # type: ignore[union-attr]
-        patron_dict["PREFERRED_LAST_NAME"] or patron_dict["LEGAL_LAST_NAME"] or ""
+        patron_dict["PREFERRED_LAST_NAME"] or ""
     )
     patron_template.first_name.string = (  # type: ignore[union-attr]
         patron_dict["LEGAL_FIRST_NAME"] or ""
