@@ -316,3 +316,43 @@ def test_populate_student_fields_non_mit_user_group_success(
         student_patron_all_values_dict,
     )
     assert patron_xml_record.user_group.string == "54"
+
+
+def test_do_not_populate_preferred_name_when_it_matches_legal_name_case_insensitive(
+    student_patron_template, student_patron_all_values_dict
+):
+    student_patron_all_values_dict["PREFERRED_FIRST_NAME"] = "Jane"
+    student_patron_all_values_dict["PREFERRED_MIDDLE_NAME"] = "Janeth"
+    student_patron_all_values_dict["PREFERRED_LAST_NAME"] = "Doe"
+    student_patron_all_values_dict["LEGAL_FIRST_NAME"] = "jane"
+    student_patron_all_values_dict["LEGAL_MIDDLE_NAME"] = "janeth"
+    student_patron_all_values_dict["LEGAL_LAST_NAME"] = "doe"
+    patron_xml_record = populate_common_fields(
+        student_patron_template,
+        student_patron_all_values_dict,
+        SIX_MONTHS,
+        TWO_YEARS,
+    )
+    assert patron_xml_record.pref_first_name.string == ""
+    assert patron_xml_record.pref_middle_name.string == ""
+    assert patron_xml_record.pref_last_name.string == ""
+
+
+def test_populate_preferred_name_when_it_differs_from_legal_name(
+    student_patron_template, student_patron_all_values_dict
+):
+    student_patron_all_values_dict["LEGAL_FIRST_NAME"] = "Sally"
+    student_patron_all_values_dict["LEGAL_MIDDLE_NAME"] = "Sallyth"
+    student_patron_all_values_dict["LEGAL_LAST_NAME"] = "Soe"
+    student_patron_all_values_dict["PREFERRED_FIRST_NAME"] = "Jane J"
+    student_patron_all_values_dict["PREFERRED_MIDDLE_NAME"] = "Janeth-preferred"
+    student_patron_all_values_dict["PREFERRED_LAST_NAME"] = "Doe-preferred"
+    patron_xml_record = populate_common_fields(
+        student_patron_template,
+        student_patron_all_values_dict,
+        SIX_MONTHS,
+        TWO_YEARS,
+    )
+    assert patron_xml_record.pref_first_name.string == "Jane J"
+    assert patron_xml_record.pref_middle_name.string == "Janeth-preferred"
+    assert patron_xml_record.pref_last_name.string == "Doe-preferred"

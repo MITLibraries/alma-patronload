@@ -217,24 +217,17 @@ def populate_common_fields(
         six_months: Six months from the current date.
         two_years: Two years from the current date.
     """
-    patron_template.pref_first_name.string = (  # type: ignore[union-attr]
-        patron_dict["PREFERRED_FIRST_NAME"] or ""
-    )
-    patron_template.pref_middle_name.string = (  # type: ignore[union-attr]
-        patron_dict["PREFERRED_MIDDLE_NAME"] or ""
-    )
-    patron_template.pref_last_name.string = (  # type: ignore[union-attr]
-        patron_dict["PREFERRED_LAST_NAME"] or ""
-    )
-    patron_template.first_name.string = (  # type: ignore[union-attr]
-        patron_dict["LEGAL_FIRST_NAME"] or ""
-    )
-    patron_template.middle_name.string = (  # type: ignore[union-attr]
-        patron_dict["LEGAL_MIDDLE_NAME"] or ""
-    )
-    patron_template.last_name.string = (  # type: ignore[union-attr]
-        patron_dict["LEGAL_LAST_NAME"] or ""
-    )
+    for part in ["FIRST", "MIDDLE", "LAST"]:
+        pref = (patron_dict.get(f"PREFERRED_{part}_NAME") or "").strip()
+        legal = (patron_dict.get(f"LEGAL_{part}_NAME") or "").strip()
+
+        # Assign legal name
+        getattr(patron_template, f"{part.lower()}_name").string = legal
+
+        # Compare case-insensitively; assign only if different
+        getattr(patron_template, f"pref_{part.lower()}_name").string = (
+            pref if pref.lower() != legal.lower() and pref else ""
+        )
     patron_template.primary_id.string = (  # type: ignore[union-attr]
         patron_dict["KRB_NAME_UPPERCASE"] + "@MIT.EDU"
     )
