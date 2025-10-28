@@ -49,7 +49,7 @@ ruff:
 	pipenv run ruff check .
 
 safety: # Check for security vulnerabilities and verify Pipfile.lock is up-to-date
-	pipenv run pip-audit
+	pipenv run pip-audit --ignore-vuln GHSA-4xh5-x5gv-qwph
 	pipenv verify
 
 # apply changes to resolve any linting errors

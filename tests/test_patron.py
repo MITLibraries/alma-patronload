@@ -103,6 +103,16 @@ def test_populate_common_fields_staff_all_values_success(
         SIX_MONTHS,
         TWO_YEARS,
     )
+    assert patron_xml_record.pref_first_name.string == "Nancy-preferred"
+    assert (
+        patron_xml_record.pref_middle_name.string == ""
+    )  # staff fixture has no preferred middle name
+    assert patron_xml_record.pref_last_name.string == "Drew-preferred"
+    assert patron_xml_record.first_name.string == "Nancy"
+    assert (
+        patron_xml_record.middle_name.string == ""
+    )  # staff fixture has no legal middle name
+    assert patron_xml_record.last_name.string == "Drew"
     assert patron_xml_record.primary_id.string == "STAFF_KRB_NAME@MIT.EDU"
     assert patron_xml_record.expiry_date.string == "2023-09-01Z"
     assert patron_xml_record.purge_date.string == "2025-09-01Z"
@@ -144,6 +154,12 @@ def test_populate_common_fields_student_all_values_success(
         SIX_MONTHS,
         TWO_YEARS,
     )
+    assert patron_xml_record.pref_first_name.string == "Jane-preferred"
+    assert patron_xml_record.pref_middle_name.string == "Janeth-preferred"
+    assert patron_xml_record.pref_last_name.string == "Doe-preferred"
+    assert patron_xml_record.first_name.string == "Jane"
+    assert patron_xml_record.middle_name.string == "Janeth"
+    assert patron_xml_record.last_name.string == "Doe"
     assert patron_xml_record.primary_id.string == "STUDENT_KRB_NAME@MIT.EDU"
     assert patron_xml_record.expiry_date.string == "2023-09-01Z"
     assert patron_xml_record.purge_date.string == "2025-09-01Z"
@@ -185,8 +201,7 @@ def test_populate_staff_fields_all_values_success(
         staff_patron_template,
         staff_patron_all_values_dict,
     )
-    assert patron_xml_record.last_name.string == "Doe"
-    assert patron_xml_record.first_name.string == "Jane"
+
     assert patron_xml_record.user_group.string == "27"
     assert patron_xml_record.user_group["desc"] == "Staff - Lincoln Labs"
     assert patron_xml_record.line1.string == "AA-B1-11"
@@ -195,22 +210,6 @@ def test_populate_staff_fields_all_values_success(
     assert (
         patron_xml_record.statistic_category["desc"]
         == "LL-Homeland Protection & Air Traffic Con"
-    )
-
-
-def test_populate_staff_fields_no_comma_in_full_name_success(
-    caplog, staff_patron_template, staff_patron_all_values_dict
-):
-    caplog.set_level(logging.DEBUG)
-    staff_patron_all_values_dict["FULL_NAME"] = "Doe Jane"
-    patron_xml_record = populate_staff_fields(
-        staff_patron_template,
-        staff_patron_all_values_dict,
-    )
-    assert patron_xml_record.last_name.string is None
-    assert patron_xml_record.first_name.string is None
-    assert (
-        "'Doe Jane' can't be split, first and last name fields left blank" in caplog.text
     )
 
 
@@ -223,8 +222,6 @@ def test_populate_staff_fields_null_values_success(
         staff_patron_template,
         staff_patron_all_values_dict,
     )
-    assert patron_xml_record.last_name.string is None
-    assert patron_xml_record.first_name.string is None
     assert patron_xml_record.user_group.string == ""
     assert patron_xml_record.user_group["desc"] == ""
     assert patron_xml_record.line1.string == "NO ADDRESS ON FILE IN DATA WAREHOUSE"
@@ -240,9 +237,7 @@ def test_populate_student_fields_all_values_success(
         student_patron_template,
         student_patron_all_values_dict,
     )
-    assert patron_xml_record.first_name.string == "Jane"
-    assert patron_xml_record.middle_name.string == "Janeth"
-    assert patron_xml_record.last_name.string == "Doe"
+
     assert patron_xml_record.address.line1.string == "100 Smith St"
     assert patron_xml_record.line3.string == "Apt 34"
     assert patron_xml_record.city.string == "Cambridge"
@@ -263,9 +258,7 @@ def test_populate_student_fields_null_values_success(
         student_patron_template,
         student_patron_all_values_dict,
     )
-    assert patron_xml_record.first_name.string == ""
-    assert patron_xml_record.middle_name.string == ""
-    assert patron_xml_record.last_name.string == ""
+
     assert (
         patron_xml_record.address.line1.string == "NO ADDRESS ON FILE IN DATA WAREHOUSE"
     )
@@ -323,3 +316,43 @@ def test_populate_student_fields_non_mit_user_group_success(
         student_patron_all_values_dict,
     )
     assert patron_xml_record.user_group.string == "54"
+
+
+def test_do_not_populate_preferred_name_when_it_matches_legal_name_case_insensitive(
+    student_patron_template, student_patron_all_values_dict
+):
+    student_patron_all_values_dict["PREFERRED_FIRST_NAME"] = "Jane"
+    student_patron_all_values_dict["PREFERRED_MIDDLE_NAME"] = "Janeth"
+    student_patron_all_values_dict["PREFERRED_LAST_NAME"] = "Doe"
+    student_patron_all_values_dict["LEGAL_FIRST_NAME"] = "jane"
+    student_patron_all_values_dict["LEGAL_MIDDLE_NAME"] = "janeth"
+    student_patron_all_values_dict["LEGAL_LAST_NAME"] = "doe"
+    patron_xml_record = populate_common_fields(
+        student_patron_template,
+        student_patron_all_values_dict,
+        SIX_MONTHS,
+        TWO_YEARS,
+    )
+    assert patron_xml_record.pref_first_name.string == ""
+    assert patron_xml_record.pref_middle_name.string == ""
+    assert patron_xml_record.pref_last_name.string == ""
+
+
+def test_populate_preferred_name_when_it_differs_from_legal_name(
+    student_patron_template, student_patron_all_values_dict
+):
+    student_patron_all_values_dict["LEGAL_FIRST_NAME"] = "Sally"
+    student_patron_all_values_dict["LEGAL_MIDDLE_NAME"] = "Sallyth"
+    student_patron_all_values_dict["LEGAL_LAST_NAME"] = "Soe"
+    student_patron_all_values_dict["PREFERRED_FIRST_NAME"] = "Jane J"
+    student_patron_all_values_dict["PREFERRED_MIDDLE_NAME"] = "Janeth-preferred"
+    student_patron_all_values_dict["PREFERRED_LAST_NAME"] = "Doe-preferred"
+    patron_xml_record = populate_common_fields(
+        student_patron_template,
+        student_patron_all_values_dict,
+        SIX_MONTHS,
+        TWO_YEARS,
+    )
+    assert patron_xml_record.pref_first_name.string == "Jane J"
+    assert patron_xml_record.pref_middle_name.string == "Janeth-preferred"
+    assert patron_xml_record.pref_last_name.string == "Doe-preferred"

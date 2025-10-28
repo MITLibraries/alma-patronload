@@ -60,9 +60,9 @@
                 </phone>
             </phones>
         </contact_info>
-        <pref_first_name />
-        <pref_middle_name />
-        <pref_last_name />
+        <pref_first_name>Jane-preferred</pref_first_name>
+        <pref_middle_name></pref_middle_name>
+        <pref_last_name></pref_last_name>
         <pref_name_suffix />
         <is_researcher />
         <user_identifiers>
@@ -138,9 +138,9 @@
 
             </phones>
         </contact_info>
-        <pref_first_name />
-        <pref_middle_name />
-        <pref_last_name />
+        <pref_first_name></pref_first_name>
+        <pref_middle_name></pref_middle_name>
+        <pref_last_name></pref_last_name>
         <pref_name_suffix />
         <is_researcher />
         <user_identifiers>

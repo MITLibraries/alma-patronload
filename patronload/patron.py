@@ -90,20 +90,6 @@ def populate_staff_fields(
         patron_template: An XML template for a patron record
         patron_dict: A dict of patron record values.
     """
-    if patron_dict["FULL_NAME"] and "," in patron_dict["FULL_NAME"]:
-        split_name = patron_dict["FULL_NAME"].split(",")
-        patron_template.last_name.string = (  # type: ignore[union-attr]
-            split_name[0].strip() or ""
-        )
-        patron_template.first_name.string = (  # type: ignore[union-attr]
-            split_name[1].strip() or ""
-        )
-    else:
-        logger.debug(
-            "'%s' can't be split, first and last name fields left blank",
-            patron_dict["FULL_NAME"],
-        )
-
     patron_template.user_group.string = (  # type: ignore[union-attr]
         patron_dict["LIBRARY_PERSON_TYPE_CODE"] or ""
     )
@@ -155,16 +141,6 @@ def populate_student_fields(
         patron_template: An XML template for a patron record
         patron_dict: A dict of patron record values.
     """
-    patron_template.first_name.string = (  # type: ignore[union-attr]
-        patron_dict["FIRST_NAME"] or ""
-    )
-    patron_template.middle_name.string = (  # type: ignore[union-attr]
-        patron_dict["MIDDLE_NAME"] or ""
-    )
-    patron_template.last_name.string = (  # type: ignore[union-attr]
-        patron_dict["LAST_NAME"] or ""
-    )
-
     patron_template.address.line1.string = (  # type: ignore[union-attr]
         patron_dict["TERM_STREET1"]
         if patron_dict["TERM_STREET1"]
@@ -241,6 +217,17 @@ def populate_common_fields(
         six_months: Six months from the current date.
         two_years: Two years from the current date.
     """
+    for part in ["FIRST", "MIDDLE", "LAST"]:
+        pref = (patron_dict.get(f"PREFERRED_{part}_NAME") or "").strip()
+        legal = (patron_dict.get(f"LEGAL_{part}_NAME") or "").strip()
+
+        # Assign legal name
+        getattr(patron_template, f"{part.lower()}_name").string = legal
+
+        # Compare case-insensitively; assign only if different
+        getattr(patron_template, f"pref_{part.lower()}_name").string = (
+            pref if pref.lower() != legal.lower() and pref else ""
+        )
     patron_template.primary_id.string = (  # type: ignore[union-attr]
         patron_dict["KRB_NAME_UPPERCASE"] + "@MIT.EDU"
     )

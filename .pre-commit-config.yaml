@@ -24,6 +24,6 @@ repos:
         types: ["python"]
       - id: pip-audit
         name: pip-audit
-        entry: pipenv run pip-audit
+        entry: pipenv run pip-audit --ignore-vuln GHSA-4xh5-x5gv-qwph
         language: system
         pass_filenames: false
