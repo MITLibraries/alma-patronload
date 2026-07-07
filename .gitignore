@@ -156,3 +156,5 @@ cython_debug/
 output/
 .vscode/
 vendor/
+.arch_tag
+.tool-versions
