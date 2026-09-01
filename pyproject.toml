@@ -59,6 +59,7 @@ show-fixes = true
 select = ["ALL", "PT"]
 ignore = [
   "COM812",
+  "CPY001",
   "D107",
   "N812",
   "PTH",
