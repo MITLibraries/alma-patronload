@@ -7,7 +7,7 @@ ECR_URL_DEV:=222053980223.dkr.ecr.us-east-1.amazonaws.com/alma-patronload-dev
 ### End of Terraform-generated header                            ###
 SHELL=/bin/bash
 DATETIME:=$(shell date -u +%Y%m%dT%H%M%SZ)
-S3_BUCKET:=shared-files-$(shell aws sts get-caller-identity --query "Account" --output text)
+S3_BUCKET=shared-files-$(shell aws sts get-caller-identity --query "Account" --output text)
 ORACLE_ZIP:=instantclient-basiclite-linux.x64-21.9.0.0.0dbru.zip
 
 CPU_ARCH ?= $(shell cat .aws-architecture 2>/dev/null || echo "linux/amd64")
