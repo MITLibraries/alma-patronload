@@ -135,8 +135,7 @@ publish-stage: # Build, tag and push to stage (developer manual use only — req
 	docker push $(ECR_URL_STAGE):`git describe --always`
 
 database-connection-test-stage: # Use after the Data Warehouse password is changed every year to confirm that the new password works.
-	aws ecs run-task --cluster alma-integrations-patronload-ecs-stage --task-definition alma-integrations-patronload-ecs-stage --launch-type="FARGATE" --network-configuration '{"awsvpcConfiguration": {"subnets": ["subnet-05df31ac28dd1a4b0", "subnet-04cfa272d4f41dc8a"],"securityGroups": ["sg-08d197ec4530ff6b7"],"assignPublicIp": "DISABLED"}}' --overrides '{"containerOverrides": [ {"name": "alma-integrations-patronload-ecs-stage", "command": ["-t"]}]}'
-
+	aws ecs run-task --cluster alma-integrations-patronload-stage --task-definition alma-integrations-patronload-stage --propagate-tags="TASK_DEFINITION" --launch-type="FARGATE" --network-configuration '{ "awsvpcConfiguration": {"subnets": ["subnet-05df31ac28dd1a4b0", "subnet-04cfa272d4f41dc8a"],"securityGroups": ["sg-0bb8b96173511b379"],"assignPublicIp": "DISABLED"}}' --overrides '{"containerOverrides": [ {"name": "alma-integrations-patronload-stage", "command": ["-t"]}]}'
 ####################################
 # CLI convenience commands
 ####################################
