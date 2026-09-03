@@ -1,0 +1,21 @@
+name: Prod Image Promote
+on:
+  workflow_dispatch:
+  release:
+    types: [published]
+
+jobs:
+
+  promote:
+    name: Prod promote
+    permissions:
+      id-token: write
+      contents: read
+    uses: mitlibraries/.github/.github/workflows/ecr-multi-arch-promote-prod.yml@main
+    secrets: inherit
+    with:
+      AWS_REGION: us-east-1
+      GHA_ROLE_STAGE: alma-patronload-gha-stage
+      GHA_ROLE_PROD: alma-patronload-gha-prod
+      ECR_STAGE: alma-patronload-stage
+      ECR_PROD: alma-patronload-prod

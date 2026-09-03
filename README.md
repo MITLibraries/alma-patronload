@@ -31,7 +31,9 @@ This app uploads 2 under 50MB zip files, each containing 1 XML file, so it is un
 - To update dependencies: `make update`
 - To run unit tests: `make test`
 - To lint the repo: `make lint`
-- To run the app: `pipenv run patronload --help`
+- To auto-fix linting: `make lint-fix`
+- To run security checks: `make security`
+- To run the app: `uv run patronload --help`
 
 The Data Warehouse runs on a older version of Oracle that necessitates the `thick` mode of `python-oracledb` which requires the Oracle Instant Client Library (this app was developed with version 21.9.0.0.0.).
 
@@ -51,7 +53,7 @@ From the project folder:
 
 1. Download [Oracle Instant Client](https://www.oracle.com/database/technologies/instant-client/downloads.html) (`basiclite` is sufficient) and set the `ORACLE_LIB_DIR` env variable.
    
-2. Run `pipenv run patronload`.
+2. Run `uv run patronload`.
 
 ## Connecting to the Data Warehouse
 

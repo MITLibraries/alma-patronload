@@ -98,9 +98,7 @@ def populate_staff_fields(
     )
 
     patron_template.address.line1.string = (  # type: ignore[union-attr]
-        patron_dict["OFFICE_ADDRESS"]
-        if patron_dict["OFFICE_ADDRESS"]
-        else "NO ADDRESS ON FILE IN DATA WAREHOUSE"
+        patron_dict["OFFICE_ADDRESS"] or "NO ADDRESS ON FILE IN DATA WAREHOUSE"
     )
     if patron_dict["OFFICE_PHONE"]:
         patron_template.phone_number.string = (  # type: ignore[union-attr]
@@ -142,9 +140,7 @@ def populate_student_fields(
         patron_dict: A dict of patron record values.
     """
     patron_template.address.line1.string = (  # type: ignore[union-attr]
-        patron_dict["TERM_STREET1"]
-        if patron_dict["TERM_STREET1"]
-        else "NO ADDRESS ON FILE IN DATA WAREHOUSE"
+        patron_dict["TERM_STREET1"] or "NO ADDRESS ON FILE IN DATA WAREHOUSE"
     )
     patron_template.address.line3.string = (  # type: ignore[union-attr]
         patron_dict["TERM_STREET2"] or ""

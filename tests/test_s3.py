@@ -8,8 +8,7 @@ def test_delete_zip_files_from_bucket_with_prefix_deletes_only_expected_objects(
 ):
     caplog.set_level(logging.DEBUG)
     assert (
-        len(mocked_s3.list_objects(Bucket="test-bucket")["Contents"])
-        == 2  # noqa: PLR2004
+        len(mocked_s3.list_objects(Bucket="test-bucket")["Contents"]) == 2  # noqa: PLR2004
     )
     delete_zip_files_from_bucket_with_prefix(s3_client, "test-bucket", "patronload")
     assert (
@@ -23,11 +22,9 @@ def test_delete_zip_files_from_bucket_with_prefix_nonexistent_prefix_no_objects_
     mocked_s3, s3_client
 ):
     assert (
-        len(mocked_s3.list_objects(Bucket="test-bucket")["Contents"])
-        == 2  # noqa: PLR2004
+        len(mocked_s3.list_objects(Bucket="test-bucket")["Contents"]) == 2  # noqa: PLR2004
     )
     delete_zip_files_from_bucket_with_prefix(s3_client, "test-bucket", "notaprefix")
     assert (
-        len(mocked_s3.list_objects(Bucket="test-bucket")["Contents"])
-        == 2  # noqa: PLR2004
+        len(mocked_s3.list_objects(Bucket="test-bucket")["Contents"]) == 2  # noqa: PLR2004
     )

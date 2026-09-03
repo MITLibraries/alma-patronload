@@ -1,5 +1,42 @@
-[tool.black]
-line-length = 90
+[project]
+name = "alma-patronload"
+version = "0.1.0"
+requires-python = ">=3.13"
+dependencies = [
+  "boto3",
+  "boto3-stubs[essential]",
+  "bs4",
+  "click",
+  "lxml",
+  "oracledb",
+  "python-dateutil",
+  "sentry-sdk",
+]
+
+[project.scripts]
+patronload = "patronload.cli:main"
+
+[build-system]
+requires = ["setuptools>=61"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools.packages.find]
+include = ["patronload*"]
+
+[dependency-groups]
+dev = [
+  "coverage",
+  "coveralls",
+  "freezegun",
+  "moto[s3,ses]",
+  "mypy",
+  "pip-audit",
+  "pre-commit",
+  "pytest",
+  "ruff",
+  "types-beautifulsoup4",
+  "types-python-dateutil",
+]
 
 [tool.mypy]
 disallow_untyped_calls = true
@@ -10,7 +47,7 @@ exclude = ["tests/"]
 log_level = "INFO"
 
 [tool.ruff]
-target-version = "py312"
+target-version = "py313"
 
 # set max line length
 line-length = 90
@@ -18,32 +55,26 @@ line-length = 90
 # enumerate all fixed violations
 show-fixes = true
 
-# [tool.ruff.lint]
-lint.select = ["ALL", "PT"]
-
-lint.ignore = [
-    # default
-    "COM812",
-    "D107", 
-    "N812", 
-    "PTH", 
-
-    # project-specific
-    "C90",
-    "D100",
-    "D101", 
-    "D102",
-    "D103",
-    "D104", 
-    "PLR0912",
-    "PLR0913", 
-    "PLR0915",
-    "S320",
-    "S321", 
+[tool.ruff.lint]
+select = ["ALL", "PT"]
+ignore = [
+  "COM812",
+  "CPY001",
+  "D107",
+  "N812",
+  "PTH",
+  "C90",
+  "D100",
+  "D101",
+  "D102",
+  "D103",
+  "D104",
+  "PLR0912",
+  "PLR0913",
+  "PLR0915",
+  "S321",
 ]
-
-# allow autofix behavior for specified rules
-lint.fixable = ["E", "F", "I", "Q"]
+fixable = ["E", "F", "I", "Q"]
 
 [tool.ruff.lint.flake8-annotations]
 mypy-init-return = true
@@ -53,9 +84,9 @@ fixture-parentheses = false
 
 [tool.ruff.lint.per-file-ignores]
 "tests/**/*" = [
-    "ANN",
-    "ARG001",
-    "S101",
+  "ANN",
+  "ARG001",
+  "S101",
 ]
 
 [tool.ruff.lint.pycodestyle]

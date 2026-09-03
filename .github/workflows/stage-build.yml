@@ -1,0 +1,23 @@
+name: Stage Image Build and Deploy
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - main
+    paths-ignore:
+      - '.github/**'
+
+jobs:
+
+  build-push:
+    name: Stage Build and Push
+    permissions:
+      id-token: write
+      contents: read
+    uses: mitlibraries/.github/.github/workflows/ecr-multi-arch-deploy-stage.yml@main
+    secrets: inherit
+    with:
+      AWS_REGION: us-east-1
+      GHA_ROLE: alma-patronload-gha-stage
+      ECR: alma-patronload-stage
+      PREBUILD: "make dependencies"
