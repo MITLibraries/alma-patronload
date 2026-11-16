@@ -4,13 +4,14 @@ on:
   release:
     types: [published]
 
+permissions:
+  id-token: write
+  contents: read
+
 jobs:
 
   promote:
     name: Prod promote
-    permissions:
-      id-token: write
-      contents: read
     uses: mitlibraries/.github/.github/workflows/ecr-multi-arch-promote-prod.yml@main
     secrets: inherit
     with:
