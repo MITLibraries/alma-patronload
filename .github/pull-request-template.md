@@ -15,16 +15,5 @@ YES | NO
 ### What are the relevant tickets?
 - Include links to Jira Software and/or Jira Service Management tickets here.
 
-### Developer
-- [ ] All new ENV is documented in README
-- [ ] All new ENV has been added to staging and production environments
-- [ ] All related Jira tickets are linked in commit message(s)
-- [ ] Stakeholder approval has been confirmed (or is not needed)
-
-### Code Reviewer(s)
-- [ ] The commit message is clear and follows our guidelines (not just this PR message)
-- [ ] There are appropriate tests covering any new functionality
-- [ ] The provided documentation is sufficient for understanding any new functionality introduced
-- [ ] Any manual tests have been performed and verified
-- [ ] New dependencies are appropriate or there were no changes
-
+### Code review
+* Code review best practices are documented [here](https://mitlibraries.github.io/guides/collaboration/code_review.html) and you are encouraged to have a constructive dialogue with your reviewers about their preferences and expectations.

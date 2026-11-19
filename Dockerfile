@@ -18,11 +18,14 @@ RUN unzip -j $INSTANTCLIENT_FILENAME -d /opt/lib/
 
 WORKDIR /app
 
-COPY pyproject.toml uv.lock* ./
+COPY pyproject.toml uv.lock ./
 COPY patronload ./patronload
 COPY config ./config
 
-RUN uv pip install --system .
+RUN uv export --locked --no-dev --no-emit-project \
+        --format requirements.txt --output-file /tmp/requirements.txt && \
+    uv pip install --system --no-deps -r /tmp/requirements.txt && \
+    uv pip install --system --no-deps .
 
 ENTRYPOINT ["patronload"]
 CMD []
